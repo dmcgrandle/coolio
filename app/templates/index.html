@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Temps:</h1>
+    {% for temp in temps %}
+    <div><p>{{ temp.name }} : <b>{{ temp.tempF }}</b></p></div>
+    {% endfor %}
+{% endblock %}

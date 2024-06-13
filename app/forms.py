@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import DecimalRangeField, validators, SubmitField
+from wtforms import DecimalRangeField, validators, SubmitField, StringField
 from wtforms.validators import DataRequired
 
 class FansForm(FlaskForm):
-    slider_val = DecimalRangeField('Slider Value', validators=[DataRequired()])
-    submit = SubmitField('Enter Data')
+    name = StringField('All')
+    speed = DecimalRangeField('Speed', validators=[DataRequired()])
+    submit = SubmitField('Change Speed')

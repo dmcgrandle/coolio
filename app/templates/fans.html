@@ -2,14 +2,14 @@
 
 {% block content %}
     <h1>Fans</h1>
-    <form action="" method="post" novalidate>
+    <form name="fan_form" id="fans_form" action="" method="post">
         {{ form.hidden_tag() }}
         <p>
             {{ form.name.data }}
             {{ form.name(size=32) }}
         </p>
         <p>
-            {{ form.speed.label }}: {{ form.speed.data }}<br>
+            {{ form.speed.label }}: <span id="speed_display_val">{{ form.speed.data | round }}</span><br>
             {{ form.speed(min=20) }}<br>
             {% for error in form.speed.errors %}
             <span style="color: red;">[{{ error }}]</span>
@@ -17,4 +17,6 @@
         </p>
         <p>{{ form.submit() }}</p>
     </form>
+    <script src="{{url_for('static', filename='fans.js')}}"></script>
+  
 {% endblock %}

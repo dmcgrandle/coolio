@@ -14,7 +14,9 @@ Mako==1.3.5
 MarkupSafe==2.1.5
 packaging==24.1
 python-dotenv==1.0.1
+reactivex==4.0.4
 redis==5.0.6
+RPi.GPIO==0.7.1
 rq==1.16.2
 SQLAlchemy==2.0.30
 typing_extensions==4.12.2

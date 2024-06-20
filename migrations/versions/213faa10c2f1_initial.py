@@ -1,8 +1,8 @@
-"""init
+"""initial
 
-Revision ID: 854b51d02838
+Revision ID: 213faa10c2f1
 Revises: 
-Create Date: 2024-06-13 18:47:02.194552
+Create Date: 2024-06-20 06:56:45.665272
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '854b51d02838'
+revision = '213faa10c2f1'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -21,6 +21,7 @@ def upgrade():
     op.create_table('fan',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=64), nullable=False),
+    sa.Column('switch', sa.Boolean(), nullable=False),
     sa.Column('speed', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
@@ -31,19 +32,31 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
-    op.create_table('speed_reading',
+    op.create_table('speed_change',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('fan_id', sa.Integer(), nullable=False),
     sa.Column('speed', sa.Integer(), nullable=False),
     sa.Column('timestamp', sa.DateTime(), nullable=False),
     sa.Column('change_reason', sa.String(length=64), nullable=False),
+    sa.Column('fan_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['fan_id'], ['fan.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    with op.batch_alter_table('speed_reading', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_speed_reading_change_reason'), ['change_reason'], unique=False)
-        batch_op.create_index(batch_op.f('ix_speed_reading_fan_id'), ['fan_id'], unique=False)
-        batch_op.create_index(batch_op.f('ix_speed_reading_timestamp'), ['timestamp'], unique=False)
+    with op.batch_alter_table('speed_change', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_speed_change_change_reason'), ['change_reason'], unique=False)
+        batch_op.create_index(batch_op.f('ix_speed_change_fan_id'), ['fan_id'], unique=False)
+        batch_op.create_index(batch_op.f('ix_speed_change_timestamp'), ['timestamp'], unique=False)
+
+    op.create_table('task',
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.Column('name', sa.String(length=128), nullable=False),
+    sa.Column('description', sa.String(length=128), nullable=True),
+    sa.Column('complete', sa.Boolean(), nullable=False),
+    sa.Column('sensor_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['sensor_id'], ['sensor.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    with op.batch_alter_table('task', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_task_name'), ['name'], unique=False)
 
     op.create_table('temp_reading',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -67,12 +80,16 @@ def downgrade():
         batch_op.drop_index(batch_op.f('ix_temp_reading_sensor_id'))
 
     op.drop_table('temp_reading')
-    with op.batch_alter_table('speed_reading', schema=None) as batch_op:
-        batch_op.drop_index(batch_op.f('ix_speed_reading_timestamp'))
-        batch_op.drop_index(batch_op.f('ix_speed_reading_fan_id'))
-        batch_op.drop_index(batch_op.f('ix_speed_reading_change_reason'))
+    with op.batch_alter_table('task', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_task_name'))
 
-    op.drop_table('speed_reading')
+    op.drop_table('task')
+    with op.batch_alter_table('speed_change', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_speed_change_timestamp'))
+        batch_op.drop_index(batch_op.f('ix_speed_change_fan_id'))
+        batch_op.drop_index(batch_op.f('ix_speed_change_change_reason'))
+
+    op.drop_table('speed_change')
     op.drop_table('sensor')
     op.drop_table('fan')
     # ### end Alembic commands ###

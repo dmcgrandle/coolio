@@ -10,12 +10,14 @@ from app import db
 class Fan(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(64), unique=True)
+    # if the fan has a switch controllable my the raspberry pi, save the is_on state
+    is_on: so.Mapped[bool] = so.mapped_column()
+    # speed_readings is the history list of speeds changed.
     # speed is the latest speed reading
     speed: so.Mapped[int] = so.mapped_column()
-    # speed_readings is the history list of speeds changed.
     speed_readings: so.WriteOnlyMapped['SpeedChange'] = so.relationship(back_populates='fan')
     def __repr__(self):
-        return '<Fan {} - last speed {}>'.format(self.name, self.speed)
+        return '<Fan {} - on? {} - last speed {}>'.format(self.name, self.is_on, self.speed)
 
 class SpeedChange(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)

@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 {% import "bootstrap_wtf.html" as wtf %}
 
+
 {% block content %}
-    <h1>Temps:</h1>
+    <h1>Welcome to Coolio!</h1>
+    <p>Current time is: {{ moment().format('MMMM Do YYYY, h:mm:ss a') }}</p>
+    <h3>Temps:</h3>
     {% for temp in temps %}
     <div><p>{{ temp.name }} : <b>{{ temp.tempF }}</b></p></div>
     {% endfor %}

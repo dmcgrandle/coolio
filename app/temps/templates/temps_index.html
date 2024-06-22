@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% import "bootstrap_wtf.html" as wtf %}
+
+
+{% block content %}
+    <h3>Temps:</h3>
+    {% for temp in temps %}
+    <div><p>{{ temp.name }} : <b>{{ temp.tempF }}</b></p></div>
+    {% endfor %}
+{% endblock %}
+<!--
+<script
+    document.getElementsByClassName('nav-link').removeClass("active");
+    document.getElementById("home-nav").addClass("active");
+></script>
+-->

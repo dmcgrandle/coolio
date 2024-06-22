@@ -16,17 +16,17 @@
     <body>
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
           <div class="container">
-            <a class="navbar-brand" href="{{ url_for('index') }}">Coolio</a>
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">Coolio</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                  <a id="nav-home" class="nav-link {{ isActive('index') }}" aria-current="page" href="{{ url_for('index') }}">Temps</a>
+                  <a id="nav-home" class="nav-link {{ isActive('temps.temps_index') }}" aria-current="page" href="{{ url_for('temps.temps_index') }}">Temps</a>
                 </li>
                 <li class="nav-item">
-                  <a id="nav-fan" class="nav-link {{ isActive('fans') }}" aria-current="page" href="{{ url_for('fans') }}">Fans</a>
+                  <a id="nav-fan" class="nav-link {{ isActive('fans.fans_index') }}" aria-current="page" href="{{ url_for('fans.fans_index') }}">Fans</a>
                 </li>
 <!--
                 <li class="nav-item">

@@ -1,21 +1,12 @@
 from flask import render_template, flash, redirect, url_for, request
 import sqlalchemy as sa
-from app import app, db
-from app.forms import SliderFanForm, SwitchFanForm
+from app import db
+from app.fans import bp
+from app.fans.forms import SliderFanForm, SwitchFanForm
 from app.models import Fan, SpeedChange
 
-@app.route('/')
-@app.route('/index')
-def index():
-    temps = [
-        {'name': 'Outside HP Room', 'tempF': '65'},
-        {'name': 'Back of Cabinet', 'tempF': '80'},
-        {'name': 'By Dreamwall', 'tempF': '72'},
-    ]
-    return render_template('index.html', temps=temps)
-
-@app.route('/fans', methods=['GET', 'POST'])
-def fans():
+@bp.route('/', methods=['GET', 'POST'])
+def fans_index():
     array_form = SliderFanForm()
     query = sa.select(Fan).where(Fan.name == 'Array')
     array_fan = db.session.scalar(query)
@@ -51,4 +42,4 @@ def fans():
     elif request.method == 'GET':
        array_form.speed.data = array_fan.speed
        wayback_form.is_on.data = wayback_fan.is_on
-    return render_template('fans.html', title='Fans!', array_form=array_form, wayback_form=wayback_form)
+    return render_template('fans_index.html', title='Fans!', array_form=array_form, wayback_form=wayback_form)

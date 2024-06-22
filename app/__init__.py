@@ -10,24 +10,45 @@ from redis import Redis
 import rq
 from config import Config
 
-app = Flask(__name__)
-app.config.from_object(Config)
-moment = Moment(app)
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+#app = Flask(__name__)
+moment = Moment()
+db = SQLAlchemy()
+migrate = Migrate()
 
-if not app.debug:
-  if not os.path.exists('logs'):
-    os.mkdir('logs')
-  file_handler = RotatingFileHandler('logs/coolio.log', maxBytes=10240, backupCount=10)
-  file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
-  file_handler.setLevel(logging.INFO)
-  app.logger.addHandler(file_handler)
+def create_app(config_class=Config):
+  app = Flask(__name__)
+  app.config.from_object(config_class)
 
-  app.logger.setLevel(logging.INFO)
-  app.logger.info('Coolio startup')
+  db.init_app(app)
+  migrate.init_app(app)
+  moment.init_app(app)
 
-from app import routes, models, errors
+  from app.errors import bp as errors_bp
+  app.register_blueprint(errors_bp)
+
+  from app.temps import bp as temps_bp
+  app.register_blueprint(temps_bp, url_prefix='/temps')
+
+  from app.fans import bp as fans_bp
+  app.register_blueprint(fans_bp, url_prefix='/fans')
+
+  from app.main import bp as main_bp
+  app.register_blueprint(main_bp)
+
+  if not app.debug and not app.testing:
+    if not os.path.exists('logs'):
+      os.mkdir('logs')
+    file_handler = RotatingFileHandler('logs/coolio.log', maxBytes=10240, backupCount=10)
+    file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
+    file_handler.setLevel(logging.INFO)
+    app.logger.addHandler(file_handler)
+
+    app.logger.setLevel(logging.INFO)
+    app.logger.info('Coolio startup')
+  
+  return app
+
+# from app import routes, models
 
 
 """

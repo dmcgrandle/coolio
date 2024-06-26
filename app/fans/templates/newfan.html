@@ -1,0 +1,47 @@
+<div class="modal fade" id="newfan-modal" tabindex="-1" aria-labelledby="newfanModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="newfanModalLabel">New Fan</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {{ modal_messages() }}
+        <h4>Please enter the details of a new fan:</h4>
+        <form class="mx-auto ms-3" name="newfan_form" action="" method="post">
+          {{ newfan_form.hidden_tag() }}
+          <p>
+            {{ newfan_form.name.label }}<br>
+            {{ newfan_form.name(size=10) }}
+            {% for error in newfan_form.name.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+          </p>
+          <p>
+            {{ newfan_form.serial.label }}<br>
+            {{ newfan_form.serial(size=10) }}
+            {% for error in newfan_form.serial.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+          </p>
+          <p>
+            {{ newfan_form.is_pwm.label }} {{ newfan_form.is_pwm }}<br>
+          </p>
+          <p>
+            {{ newfan_form.has_switch.label }} {{ newfan_form.has_switch }}<br>
+          </p>
+<!--          <p>
+            {{ newfan_form.has_switch }}<br>
+            {% for error in newfan_form.has_switch.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>  -->
+      </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save New Fan</button>
+      </div>
+    </div>
+  </div>
+</div>

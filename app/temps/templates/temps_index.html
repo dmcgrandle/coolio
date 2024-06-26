@@ -7,6 +7,16 @@
     {% for temp in temps %}
     <div><p>{{ temp.name }} : <b>{{ temp.tempF }}</b></p></div>
     {% endfor %}
+    <form class="mx-auto ms-3" name="temp_form" action="" method="post">
+      {{ form.hidden_tag() }}
+      <p>
+          {{ form.temp }}<br>
+          {% for error in form.temp.errors %}
+          <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}
+      </p>
+      <p><a href="{{ url_for('temps.temps_index') }}">{{ form.take_measurement }}</a></p>
+    </form>
 {% endblock %}
 <!--
 <script

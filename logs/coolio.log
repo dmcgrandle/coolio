@@ -1,0 +1,25 @@
+2024-06-23 06:55:47,116 INFO: Coolio startup [in /home/darren/coolio/app/__init__.py:50]
+2024-06-23 06:55:48,220 INFO: Coolio startup [in /home/darren/coolio/app/__init__.py:50]
+2024-06-23 06:55:49,332 INFO: Coolio startup [in /home/darren/coolio/app/__init__.py:50]
+2024-06-23 06:55:50,475 INFO: Coolio startup [in /home/darren/coolio/app/__init__.py:50]
+2024-06-23 06:57:15,824 INFO: Coolio startup [in /home/darren/coolio/app/__init__.py:50]
+2024-06-23 06:57:16,985 INFO: Coolio startup [in /home/darren/coolio/app/__init__.py:50]
+2024-06-23 06:57:18,137 INFO: Coolio startup [in /home/darren/coolio/app/__init__.py:50]
+2024-06-23 06:57:19,274 INFO: Coolio startup [in /home/darren/coolio/app/__init__.py:50]
+2024-06-23 06:57:20,427 INFO: Coolio startup [in /home/darren/coolio/app/__init__.py:50]
+2024-06-23 07:35:17,926 INFO: Coolio startup [in /home/darren/coolio/app/__init__.py:50]
+2024-06-23 07:39:32,618 INFO: Coolio startup [in /home/darren/coolio/app/__init__.py:50]
+2024-06-23 22:09:33,717 INFO: Coolio startup [in /home/darren/coolio/app/__init__.py:50]
+2024-06-23 22:12:45,852 INFO: Coolio startup [in /home/darren/coolio/app/__init__.py:50]
+2024-06-24 03:56:21,907 INFO: Coolio startup [in /home/darren/coolio/app/__init__.py:50]
+2024-06-24 16:54:32,305 INFO: Coolio startup [in /home/darren/coolio/app/__init__.py:50]
+2024-06-24 17:17:51,609 INFO: Coolio startup [in /home/darren/coolio/app/__init__.py:50]
+2024-06-24 17:25:26,712 INFO: Coolio startup [in /home/darren/coolio/app/__init__.py:50]
+2024-06-24 17:28:25,602 ERROR: Unhandled exception [in /home/darren/coolio/app/tasks.py:69]
+Traceback (most recent call last):
+  File "/home/darren/coolio/app/tasks.py", line 59, in read_temperature
+    time.sleep(60)
+  File "/home/darren/coolio/venv/lib/python3.11/site-packages/rq/timeouts.py", line 63, in handle_death_penalty
+    raise self._exception('Task exceeded maximum timeout value ({0} seconds)'.format(self._timeout))
+rq.timeouts.JobTimeoutException: Task exceeded maximum timeout value (180 seconds)
+2024-06-24 23:14:23,684 INFO: Coolio startup [in /home/darren/coolio/app/__init__.py:50]

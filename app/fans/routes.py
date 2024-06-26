@@ -3,7 +3,7 @@ import sqlalchemy as sa
 from app import db
 from app.fans import bp
 from app.fans.forms import SliderFanForm, SwitchFanForm
-from app.models import Fan, SpeedChange
+from app.fans.models import Fan, SpeedChange
 
 @bp.route('/', methods=['GET', 'POST'])
 def fans_index():
@@ -25,7 +25,7 @@ def fans_index():
       db.session.add(wayback_fan)
       db.session.commit()
       flash('Created new fan {}'.format(wayback_fan.name))
-      return redirect(url_for('fans'))
+      return redirect(url_for('fans.fans_index'))
     if array_form.validate_on_submit():
       array_form.speed.data = round(array_form.speed.data)
       array_fan.name = 'Array'

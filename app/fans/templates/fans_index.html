@@ -2,32 +2,33 @@
 
 {% block content %}
     <h1>Fans</h1>
-    <div class="mx-1 shadow-5-strong border border-white rounded" style="width: 180px">
-        <h2 class="ms-1">Array:</h2>
-        <form class="mx-auto ms-3" name="array_form" action="" method="post">
-            {{ array_form.hidden_tag() }}
-            <p>
-                {{ array_form.speed.label }}: <span id="speed_display_val">{{ array_form.speed.data | round }}</span><br>
-                {{ array_form.speed(min=20) }}<br>
-                {% for error in array_form.speed.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-                {% endfor %}
-            </p>
-        </form>
+    <div class="container">
+        <div class="row">
+            {% for fan, form in fans_and_forms %}
+            <div class="col mx-1 shadow-5-strong border border-white rounded" style="max-width: 220px">
+                <h2 class="ms-1">{{ form.name.data }}:</h2>
+                <form class="mx-auto ms-3" name="{{ fan.name }}" action="" method="post">
+                    {{ form.hidden_tag() }}
+                    <p>
+                        {{ form.speed.label }}: <span class="speed_display_val">{{ form.speed.data | round }}</span><br>
+                        {{ form.speed(min=20) }}<br>
+                        {% for error in form.speed.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                        {% endfor %}
+                    </p>
+                    <p>
+                      {{ form.is_on.label }} <span class="ms-3">{{ form.is_on }}</span><br>
+                      {% for error in form.is_on.errors %}
+                      <span style="color: red;">[{{ error }}]</span>
+                      {% endfor %}
+                    </p>
+                    <p>{{ form.submit }}</p>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
     </div>
-    <div class="mx-1 border border-white rounded" style="width: 180px">
-      <h2 class="ms-1">Back of Closet:</h2>
-      <form class="mx-auto ms-3" name="wayback_form" action="" method="post">
-          {{ wayback_form.hidden_tag() }}
-          <p>
-              {{ wayback_form.is_on }}<br>
-              {% for error in wayback_form.is_on.errors %}
-              <span style="color: red;">[{{ error }}]</span>
-              {% endfor %}
-          </p>
-      </form>
-  </div>
 
     <script src="{{url_for('fans.static', filename='fans.js')}}"></script>
-  
+
 {% endblock %}

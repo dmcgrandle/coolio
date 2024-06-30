@@ -7,7 +7,8 @@ from app.temps.models import TempTask, Sensor, TempReading
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 temp_dir = '/sys/bus/w1/devices'
-device_folder = glob.glob(temp_dir + '/28*')[0] #first temp sensor is 0
+device_folder = 'temp'
+# device_folder = glob.glob(temp_dir + '/28*')[0] #first temp sensor is 0
 print('device folder is', device_folder)
 device_file = device_folder + '/w1_slave'
 

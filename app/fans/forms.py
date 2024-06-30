@@ -2,12 +2,6 @@ from flask_wtf import FlaskForm
 from wtforms import DecimalRangeField, BooleanField, StringField, SubmitField, SelectField , validators, IntegerField
 from wtforms.validators import DataRequired
 
-class SliderFanForm(FlaskForm):
-    speed = DecimalRangeField('Speed', validators=[DataRequired()])
-
-class SwitchFanForm(FlaskForm):
-    is_on = BooleanField('Switch', validators=[DataRequired()])
-
 class NewFanForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     serial = StringField('Serial', validators=[DataRequired()])
@@ -21,5 +15,8 @@ class FanForm(FlaskForm):
     name = StringField('Name')
     serial = StringField('Serial')
     is_on = BooleanField('Switch')
-    speed = DecimalRangeField('Speed', render_kw={'class': 'speed'})
+    speed = DecimalRangeField('Speed', render_kw={'class': 'speed'}, validators=[DataRequired()])
     submit = SubmitField('Save Fan')
+    ident = StringField()
+
+

@@ -9,8 +9,9 @@
                 <h2 class="ms-1">{{ form.name.data }}:</h2>
                 <form class="mx-auto ms-3" name="{{ fan.name }}" action="" method="post">
                     {{ form.hidden_tag() }}
+                    <div class="invisible" style="display: none">{{ form.name }}</div>
                     <p>
-                        {{ form.speed.label }}: <span class="speed_display_val">{{ form.speed.data | round }}</span><br>
+                        {{ form.speed.label }}: <span class="speed_display_val">{{ form.speed.data | round }}%</span><br>
                         {{ form.speed(min=20) }}<br>
                         {% for error in form.speed.errors %}
                         <span style="color: red;">[{{ error }}]</span>
@@ -28,6 +29,8 @@
             {% endfor %}
         </div>
     </div>
+
+    <a class="btn btn-primary" href="{{ url_for('fans.newfan') }}" role="button">Add a fan</a>
 
     <script src="{{url_for('fans.static', filename='fans.js')}}"></script>
 

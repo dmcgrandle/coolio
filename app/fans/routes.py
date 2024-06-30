@@ -2,34 +2,40 @@ from flask import render_template, flash, redirect, url_for, request
 import sqlalchemy as sa
 from app import db
 from app.fans import bp
-from app.fans.forms import SliderFanForm, SwitchFanForm, NewFanForm, FanForm
-from app.fans.models import Fan, SpeedChange
+from app.fans.forms import NewFanForm, FanForm
+from app.fans.models import Fan
 
 @bp.route('/', methods=['GET', 'POST'])
 def fans_index():
-    fans = Fan.query.all() # query the database for all Fans
-    if fans.__len__() == 0:
-      return redirect(url_for('fans.newfan'))
-    fans_and_forms =[]
-    for fan in fans:
-      form = FanForm()
-      fans_and_forms.append((fan, form))
-    for fan, form in fans_and_forms:
-      if form.validate_on_submit():
-        fan.is_on = form.is_on.data
-        fan.speed = round(form.speed.data)
-        db.session.commit()
-#        db.session.add(fan)
-#        db.session.commit()
-        form.name.data = fan.name
-      elif request.method == 'GET':
-        form.name.data = fan.name
-        form.serial.data = fan.id
-        form.is_on.data = fan.is_on
-        form.speed.data = fan.speed
-        form.speed.data = fan.speed
-        form.is_on.data = fan.is_on
+    
+    def copy_fan(fan):
+       form = FanForm()
+       form.name.data = fan.name
+       form.serial.data = fan.id
+       form.is_on.data = fan.is_on
+       form.speed.data = fan.speed
+       return form
 
+    def make_fans_and_forms(fans):
+      temp = []
+      if fans.__len__() == 0:
+        return redirect(url_for('fans.newfan'))
+      for fan in fans:
+        form = copy_fan(fan)
+        temp.append((fan, form))
+      return temp
+
+    fans = Fan.query.all() # query the database for all Fans
+    fans_and_forms = make_fans_and_forms(fans)
+    if request.method == 'POST':
+      for fan, form in fans_and_forms:
+        if fan.name == request.form['name'] and form.validate_on_submit(): # only update the fan that was submitted
+          fan.is_on = 'is_on' in request.form
+          fan.speed = round(float(request.form['speed']))
+          db.session.commit()
+      return redirect(url_for('fans.fans_index'))
+    else: # request.method == 'GET'
+      pass
     return render_template('fans_index.html', title='Fans!', fans_and_forms=fans_and_forms)
 
 @bp.route('/newfan', methods=['GET', 'POST'])

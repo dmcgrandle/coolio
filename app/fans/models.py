@@ -10,12 +10,12 @@ from app import db
 class Fan(db.Model):
     id: so.Mapped[str] = so.mapped_column(sa.String(36), primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(64), unique=True)
-    has_switch: so.Mapped[bool] = so.mapped_column()
-    switch_pin: so.Mapped[int] = so.mapped_column()
+    has_swtch: so.Mapped[bool] = so.mapped_column()
+    swtch_pin: so.Mapped[int] = so.mapped_column()
     has_pwm: so.Mapped[bool] = so.mapped_column()
     pwm_pin: so.Mapped[int] = so.mapped_column()
 # current_state variables:
-    is_on: so.Mapped[bool] = so.mapped_column()
+    swtch: so.Mapped[bool] = so.mapped_column()
     speed: so.Mapped[int] = so.mapped_column()
 # mapped var pointing to table of past speed changes
     speed_changes: so.WriteOnlyMapped['SpeedChange'] = so.relationship(back_populates='fan')

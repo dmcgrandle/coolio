@@ -7,36 +7,28 @@ from app.fans.models import Fan
 
 @bp.route('/', methods=['GET', 'POST'])
 def fans_index():
-    
-    def copy_fan(fan):
-       form = FanForm()
-       form.name.data = fan.name
-       form.serial.data = fan.id
-       form.is_on.data = fan.is_on
-       form.speed.data = fan.speed
-       return form
-
-    def make_fans_and_forms(fans):
-      temp = []
-      if fans.__len__() == 0:
-        return redirect(url_for('fans.newfan'))
-      for fan in fans:
-        form = copy_fan(fan)
-        temp.append((fan, form))
-      return temp
-
     fans = Fan.query.all() # query the database for all Fans
-    fans_and_forms = make_fans_and_forms(fans)
-    if request.method == 'POST':
-      for fan, form in fans_and_forms:
-        if fan.name == request.form['name'] and form.validate_on_submit(): # only update the fan that was submitted
-          fan.is_on = 'is_on' in request.form
-          fan.speed = round(float(request.form['speed']))
+    if fans.__len__() == 0:
+      flash('We need to create the first fan!')
+      return redirect(url_for('fans.newfan'))
+    form = FanForm(request.form)
+    if form.validate_on_submit():
+      for fan in fans:
+        if form.name.data == fan.name:
+          fan.swtch = form.swtch.data
+          fan.speed = round(form.speed.data)
           db.session.commit()
-      return redirect(url_for('fans.fans_index'))
     else: # request.method == 'GET'
-      pass
-    return render_template('fans_index.html', title='Fans!', fans_and_forms=fans_and_forms)
+       pass
+    forms = []
+    for fan in fans:
+        form = FanForm()
+        form.name.data = fan.name
+        form.serial.data = fan.id
+        form.swtch.data = fan.swtch
+        form.speed.data = fan.speed
+        forms.append(form)
+    return render_template('fans_index.html', title='Fans!', forms=forms)
 
 @bp.route('/newfan', methods=['GET', 'POST'])
 def newfan():
@@ -45,11 +37,11 @@ def newfan():
     if newfan_form.validate_on_submit():
       newfan.name = newfan_form.name.data
       newfan.id = newfan_form.serial.data 
-      newfan.has_switch = newfan_form.has_switch.data == 'True'
-      newfan.switch_pin = newfan_form.switch_pin.data 
+      newfan.has_swtch = newfan_form.has_swtch.data == 'True'
+      newfan.swtch_pin = newfan_form.swtch_pin.data 
       newfan.has_pwm = newfan_form.has_pwm.data == 'True'
       newfan.pwm_pin = newfan_form.pwm_pin.data
-      newfan.is_on = False
+      newfan.swtch = False
       newfan.speed = 0
       db.session.add(newfan)
       db.session.commit()

@@ -4,12 +4,12 @@
     <h1>Fans</h1>
     <div class="container">
         <div class="row">
-            {% for fan, form in fans_and_forms %}
+            {% for form in forms %}
             <div class="col mx-1 shadow-5-strong border border-white rounded" style="max-width: 220px">
                 <h2 class="ms-1">{{ form.name.data }}:</h2>
-                <form class="mx-auto ms-3" name="{{ fan.name }}" action="" method="post">
+                <form class="mx-auto ms-3" name="{{ form.name.data }}" action="" method="post">
                     {{ form.hidden_tag() }}
-                    <div class="invisible" style="display: none">{{ form.name }}</div>
+                    <div>{{ form.name }}</div> 
                     <p>
                         {{ form.speed.label }}: <span class="speed_display_val">{{ form.speed.data | round }}%</span><br>
                         {{ form.speed(min=20) }}<br>
@@ -18,8 +18,8 @@
                         {% endfor %}
                     </p>
                     <p>
-                      {{ form.is_on.label }} <span class="ms-3">{{ form.is_on }}</span><br>
-                      {% for error in form.is_on.errors %}
+                      {{ form.swtch.label }} <span class="ms-3">{{ form.swtch }}</span><br>
+                      {% for error in form.swtch.errors %}
                       <span style="color: red;">[{{ error }}]</span>
                       {% endfor %}
                     </p>

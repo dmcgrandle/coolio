@@ -20,11 +20,11 @@
           {% endfor %}
         </p>
         <p>{{ newfan_form.has_pwm.label }}:  <span class="ms-2">{{ newfan_form.has_pwm }}</span><br></p>
-        <p>{{ newfan_form.has_switch.label }}:  <span class="ms-2">{{ newfan_form.has_switch }}</span><br></p>
+        <p>{{ newfan_form.has_swtch.label }}:  <span class="ms-2">{{ newfan_form.has_swtch }}</span><br></p>
         <p>
-          {{ newfan_form.switch_pin.label }}<br>
-          {{ newfan_form.switch_pin(size=2) }}
-          {% for error in newfan_form.switch_pin.errors %}
+          {{ newfan_form.swtch_pin.label }}<br>
+          {{ newfan_form.swtch_pin(size=2) }}
+          {% for error in newfan_form.swtch_pin.errors %}
           <span style="color: red;">[{{ error }}]</span>
           {% endfor %}
         </p>

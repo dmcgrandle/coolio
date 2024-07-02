@@ -27,7 +27,6 @@ def fans_index():
     if fans.__len__() == 0:
       return redirect(url_for('fans.newfan'))
     form = FanForm(request.form)
-    forms = make_forms(fans)
     if form.validate_on_submit():
       for fan in fans:
         if fan.name == form.name.data: # only update the fan that was submitted
@@ -36,6 +35,7 @@ def fans_index():
           db.session.commit()
     else: # request.method == 'GET'
       pass
+    forms = make_forms(fans)
     return render_template('fans_index.html', title='Fans!', forms=forms)
 
 @bp.route('/newfan', methods=['GET', 'POST'])

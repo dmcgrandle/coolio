@@ -7,13 +7,13 @@ from app.fans.models import Fan
 
 @bp.route('/', methods=['GET', 'POST'])
 def fans_index():
-    fans = Fan.query.all() # query the database for all Fans
+    fans = Fan.query.all()
     if fans.__len__() == 0:
       return redirect(url_for('fans.newfan'))
     form = FanForm(request.form)
     if form.validate_on_submit():
       for fan in fans:
-        if fan.name == form.name.data: # only update the fan that was submitted
+        if fan.name == form.name.data: 
           fan.swtch = form.swtch.data
           fan.speed = round(form.speed.data)
           db.session.commit()
@@ -24,11 +24,9 @@ def fans_index():
     for fan in fans:
       form = FanForm()
       form.name.data = fan.name
-      form.serial.data = fan.id
       form.swtch.data = fan.swtch
       form.speed.data = fan.speed
       forms.append(form)
-#    forms = make_forms(fans)
     return render_template('fans_index.html', title='Fans!', forms=forms)
 
 @bp.route('/newfan', methods=['GET', 'POST'])

@@ -13,8 +13,6 @@ class NewFanForm(FlaskForm):
 
 class FanForm(FlaskForm):
     name = HiddenField('Name')
-    serial = StringField('Serial')
     swtch = BooleanField('Switch', render_kw={'class': 'swtch'})
     speed = DecimalRangeField('Speed', render_kw={'class': 'speed'}, validators=[DataRequired()])
     submit = SubmitField('Save Fan')
-    ident = StringField()

@@ -12,7 +12,7 @@ def fans_index():
        form = FanForm()
        form.name.data = fan.name
        form.serial.data = fan.id
-       form.is_on.data = fan.is_on
+       form.swtch.data = fan.swtch
        form.speed.data = fan.speed
        return form
 
@@ -30,9 +30,10 @@ def fans_index():
     if form.validate_on_submit():
       for fan in fans:
         if fan.name == form.name.data: # only update the fan that was submitted
-          fan.is_on = form.is_on.data
+          fan.swtch = form.swtch.data
           fan.speed = round(form.speed.data)
           db.session.commit()
+      return redirect(url_for('fans.fans_index'))
     else: # request.method == 'GET'
       pass
     forms = make_forms(fans)

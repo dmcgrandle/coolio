@@ -2,7 +2,8 @@ from flask_wtf import FlaskForm
 from wtforms import DecimalRangeField, BooleanField, StringField, HiddenField, SubmitField, SelectField , validators, IntegerField
 from wtforms.validators import DataRequired
 
-class NewFanForm(FlaskForm):
+class EditFanForm(FlaskForm):
+    disp_title = StringField('Display Title')
     name = StringField('Name', validators=[DataRequired()])
     serial = StringField('Serial', validators=[DataRequired()])
     has_swtch = SelectField('Pi can swtch fan power', choices=[('False', ''), ('True', 'Yes'), ('False', 'No')], validate_choice=False)
@@ -15,4 +16,5 @@ class FanForm(FlaskForm):
     name = HiddenField('Name')
     swtch = BooleanField('Switch', render_kw={'class': 'swtch'})
     speed = DecimalRangeField('Speed', render_kw={'class': 'speed'}, validators=[DataRequired()])
-    submit = SubmitField('Save Fan')
+    edit = SubmitField('Edit Fan', render_kw={'class': 'btn btn-outline-warning'})
+    delete = SubmitField('Delete Fan', render_kw={'class': 'btn btn-outline-danger'})

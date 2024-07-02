@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ form.disp_title.data }}</h1>
+    <div class="mx-1 shadow-5-strong border border-white rounded" style="max-width: 400px">
+      <form class="mx-auto ms-3" name="form" action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+          {{ form.name.label }}<br>
+          {{ form.name(size=10) }}
+          {% for error in form.name.errors %}
+          <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}
+        </p>
+        <p>
+          {{ form.serial.label }}<br>
+          {{ form.serial(size=10) }}
+          {% for error in form.serial.errors %}
+          <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}
+        </p>
+        <p>{{ form.has_pwm.label }}:  <span class="ms-2">{{ form.has_pwm }}</span><br></p>
+        <p>{{ form.has_swtch.label }}:  <span class="ms-2">{{ form.has_swtch }}</span><br></p>
+        <p>
+          {{ form.swtch_pin.label }}<br>
+          {{ form.swtch_pin(size=2) }}
+          {% for error in form.swtch_pin.errors %}
+          <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}
+        </p>
+        <p>
+          {{ form.pwm_pin.label }}<br>
+          {{ form.pwm_pin(size=2) }}
+          {% for error in form.pwm_pin.errors %}
+          <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+    </div>
+ 
+{% endblock %}

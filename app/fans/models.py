@@ -18,7 +18,7 @@ class Fan(db.Model):
     swtch: so.Mapped[bool] = so.mapped_column()
     speed: so.Mapped[int] = so.mapped_column()
 # mapped var pointing to table of past speed changes
-    speed_changes: so.WriteOnlyMapped['SpeedChange'] = so.relationship(back_populates='fan')
+    speed_changes: so.WriteOnlyMapped['SpeedChange'] = so.relationship(back_populates='fan', passive_deletes=True)
     def __repr__(self):
         return '<Fan {} - on? {} - last speed {}>'.format(self.name, self.is_on, self.speed)
 

@@ -7,22 +7,6 @@ from app.fans.models import Fan
 
 @bp.route('/', methods=['GET', 'POST'])
 def fans_index():
-    
-    def copy_fan(fan):
-       form = FanForm()
-       form.name.data = fan.name
-       form.serial.data = fan.id
-       form.swtch.data = fan.swtch
-       form.speed.data = fan.speed
-       return form
-
-    def make_forms(fans):
-      temp = []
-      for fan in fans:
-        form = copy_fan(fan)
-        temp.append(form)
-      return temp
-
     fans = Fan.query.all() # query the database for all Fans
     if fans.__len__() == 0:
       return redirect(url_for('fans.newfan'))
@@ -36,7 +20,15 @@ def fans_index():
       return redirect(url_for('fans.fans_index'))
     else: # request.method == 'GET'
       pass
-    forms = make_forms(fans)
+    forms = []
+    for fan in fans:
+      form = FanForm()
+      form.name.data = fan.name
+      form.serial.data = fan.id
+      form.swtch.data = fan.swtch
+      form.speed.data = fan.speed
+      forms.append(form)
+#    forms = make_forms(fans)
     return render_template('fans_index.html', title='Fans!', forms=forms)
 
 @bp.route('/newfan', methods=['GET', 'POST'])

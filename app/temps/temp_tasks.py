@@ -1,14 +1,14 @@
 import os, glob, sys, time
 import sqlalchemy as sa
 from rq import get_current_job
-from app import create_app, db
+from app import create_app, db, scheduler
 from app.temps.models import TempTask, Sensor, TempReading
 
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 temp_dir = '/sys/bus/w1/devices'
-device_folder = 'temp'
-# device_folder = glob.glob(temp_dir + '/28*')[0] #first temp sensor is 0
+#device_folder = 'temp' # use for testing if there is no sensor attached
+device_folder = glob.glob(temp_dir + '/28*')[0] #first temp sensor is 0
 print('device folder is', device_folder)
 device_file = device_folder + '/w1_slave'
 
@@ -52,12 +52,7 @@ def read_temperature(sensor_id):
         print('sensor', sensor)
         _set_task_progress(0)
         data = []
-        i = 0
-        while i<5:
-            temp_c, temp_f = read_temp()
-            print('Temp is {}°c {}°f'.format(temp_c, temp_f))
-            time.sleep(60)
-            i = i + 1
+        return read_temp
 #     total_temp_rea5ngs = db.session.scalar(sa.select(sa.func.count()).select_from(sensor.temps.select().subquery()))
 #        for temp_reading in db.session.scalars(sensor.temps.select().order_by(TempReading.timestamp.asc())):
 #            data.append({'temp': temp_reading.temp, 'timestamp': temp_reading.timestamp.isoformat() + 'Z'})

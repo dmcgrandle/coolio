@@ -6,7 +6,6 @@ from app.temps import bp
 from app.temps.forms import TempForm
 from app.temps.models import Sensor, TempReading, TempTask
 
-
 @bp.route('/', methods=['GET', 'POST'])
 def temps_index():
     temps = [
@@ -17,13 +16,13 @@ def temps_index():
     query = sa.select(Sensor).where(Sensor.name == 'Testing')
     test_sensor = db.session.scalar(query)
     if test_sensor is None:
-        test_sensor = Sensor(name='Testing')
+        test_sensor = Sensor(id='0000006a41e9', name='Testing')
         db.session.add(test_sensor)
         db.session.commit()
         flash('Created new sensor {}'.format(test_sensor.name))
     temp_form = TempForm()
     if temp_form.validate_on_submit():
         sensor = test_sensor
-        sensor.launch_task('read_temperature', 'Taking Temp Reading...')
-        db.session.commit()
+#        sensor.launch_task('read_temperature', 'Taking Temp Reading...')
+        
     return render_template('temps_index.html', form=temp_form, temps=temps)

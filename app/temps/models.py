@@ -8,7 +8,7 @@ import rq
 from app import db
 
 class Sensor(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    id: so.Mapped[str] = so.mapped_column(primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(64), unique=True)
 
     temps: so.WriteOnlyMapped['TempReading'] = so.relationship(back_populates='sensor')

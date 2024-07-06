@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, '.env'))
@@ -11,3 +12,6 @@ class Config:
     INTERVAL_TASK_ID = os.environ.get('INTERVAL_TASK_ID') or 'interval-task-id'
 
     SCHEDULER_API_ENABLED = os.environ.get('SCHEDULER_API_ENABLED') or True
+    SCHEDULER_JOBSTORES = {
+        'default': SQLAlchemyJobStore(url='sqlite:///flask_context.db')
+    }

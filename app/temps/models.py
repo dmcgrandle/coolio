@@ -39,13 +39,13 @@ class Sensor(db.Model):
 class TempReading(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     sensor_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Sensor.id), index=True)
-    temp: so.Mapped[int] = so.mapped_column()
+    temp: so.Mapped[int] = so.mapped_column() # the temperature in degrees Fahrenheit
     timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
 
     sensor: so.Mapped[Sensor] = so.relationship(back_populates='temps')
 
     def __repr__(self):
-        return '<Temp {}>'.format(self.temperature)
+        return '<Time: {} Temp {}>'.format(self.timestamp, self.temp)
 
 # TempTask is a class that communicates with an independent process through a RQ message queue
 # to get temperature readings - this class tracks "task" jobs that are executed, not the actual

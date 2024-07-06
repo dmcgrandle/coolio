@@ -14,8 +14,7 @@ from config import Config
 moment = Moment()
 db = SQLAlchemy()
 migrate = Migrate()
-
-from app.temps.extensions import scheduler
+scheduler = APScheduler()
 
 def create_app(config_class=Config):
   app = Flask(__name__)
@@ -24,6 +23,7 @@ def create_app(config_class=Config):
 #  app.redis = Redis.from_url(app.config['REDIS_URL'])
 #  app.task_queue = rq.Queue('coolio-tasks', connection=app.redis)
 
+  db.app = app
   db.init_app(app)
   migrate.init_app(app, db)
   moment.init_app(app)

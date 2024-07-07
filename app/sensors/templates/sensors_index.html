@@ -5,18 +5,19 @@
     <div class="container">
         <div class="row">
             {% for form in forms %}
-            <div class="col m-2 shadow-5-strong border border-white rounded" style="max-width: 250px">
+            <div class="col m-2 shadow-5-strong border border-white rounded" style="max-width: 300px">
                 <h2 class="m-1">{{ form.name.data }}:</h2>
                 <form class="mx-auto ms-3" name="{{ form.name.data }}" action="" method="post">
                     {{ form.hidden_tag() }}
-                    <div>{{ form.name }}</div> 
+                    <h5>Latest Reading:</h5>
+                    <p>
+                      {{ form.reading.label }}: <span>{{ form.reading.data }} &#176;F</span><br>
+                      time: {{ form.timestamp.data }}
+                    </p>
+                    <h5>Details:</h5>
                     <p>
                         {{ form.serial.label }}: <span>{{ form.serial.data }}</span><br>
-                    </p>
-                    <p>
                         {{ form.type.label }}: <span>{{ form.type.data }}</span><br>
-                    </p>
-                    <p>
                         {{ form.model.label }} <span class="ms-3">{{ form.model.data }}</span><br>
                     </p>
                     <p>{{ form.edit }} <span class="ms-1">{{ form.delete }}</span></p>

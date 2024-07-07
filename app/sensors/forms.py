@@ -12,9 +12,11 @@ class EditSensorForm(FlaskForm):
 
 class SensorForm(FlaskForm):
     name = IntegerField('Temp', validators=[DataRequired()])
+    reading = StringField('Reading')
+    timestamp = StringField('Time of Reading')
     serial = StringField('Serial')
     type = StringField('Sensor Type')
     model = StringField('Sensor Model')
-    edit = SubmitField('Edit Fan', render_kw={'class': 'btn btn-outline-warning'})
-    delete = SubmitField('Delete Fan', render_kw={'class': 'btn btn-outline-danger'})
+    edit = SubmitField('Edit Sensor', render_kw={'class': 'btn btn-outline-warning'})
+    delete = SubmitField('Delete Sensor', render_kw={'class': 'btn btn-outline-danger'})
 

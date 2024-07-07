@@ -8,9 +8,7 @@ from app import db
 class Sensor(db.Model):
     id: so.Mapped[str] = so.mapped_column(primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(64), unique=True)
-    type: so.Mapped[str] = so.mapped_column(sa.String(64)) # could be other than temperature sensor
-
-    readings: so.WriteOnlyMapped['Reading'] = so.relationship(back_populates='sensor')
+    type: so.Mapped[str] = so.mapped_column(sa.String(64)) # could be other than temperature sensor?
 
     def __repr__(self):
         return '<Sensor {} type: {}>'.format(self.name, self.type)
@@ -21,6 +19,8 @@ class Sensor(db.Model):
 class TempSensor(Sensor):
     model: so.Mapped[str] = so.mapped_column(sa.String(64)) # exact model
 
+    readings: so.WriteOnlyMapped['TempReading'] = so.relationship(back_populates='sensor')
+
     def __repr__(self):
         return '<Temp Sensor {} type: {} model: {}>'.format(self.name, self.type, self.model)
     
@@ -29,13 +29,12 @@ class TempSensor(Sensor):
 class Reading(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     sensor_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Sensor.id), index=True)
-    temp: so.Mapped[int] = so.mapped_column() # the temperature in degrees Fahrenheit
     timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
-
-    sensor: so.Mapped[Sensor] = so.relationship(back_populates='readings')
 
     def __repr__(self):
         return '<Time: {} Temp {}>'.format(self.timestamp, self.temp)
 
 class TempReading(Reading):
-    pass
+    temp: so.Mapped[int] = so.mapped_column() # the temperature in degrees Fahrenheit
+
+    sensor: so.Mapped[TempSensor] = so.relationship(back_populates='readings')

@@ -8,7 +8,7 @@ os.system('modprobe w1-therm')
 
 print('Initializing scheduled_tasks')
 
-@scheduler.task('interval', id='temp_reading', seconds=5000, max_instances=1)
+@scheduler.task('interval', id='temp_reading', seconds=300, max_instances=1)
 def interval_temp_reading():
   with db.app.app_context():
     try:

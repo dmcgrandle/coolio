@@ -33,10 +33,11 @@ def sensors_index():
       reading = db.session.scalars(query).first()
       form = SensorForm()
       form.name.data = sensor.name
-      form.reading.data = reading.temp
-      form.timestamp.data = reading.timestamp.astimezone(
-          pytz.timezone('America/Los_Angeles')
-        ).strftime('%m/%d/%y, %H:%M:%S')
+      if reading:
+        form.reading.data = reading.temp
+        form.timestamp.data = reading.timestamp.astimezone(
+            pytz.timezone('America/Los_Angeles')
+          ).strftime('%m/%d/%y, %H:%M:%S')
       form.serial.data = sensor.id
       form.type.data = sensor.type
       form.model.data = sensor.model

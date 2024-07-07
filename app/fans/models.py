@@ -3,8 +3,6 @@ from typing import Optional
 from flask import current_app
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-import redis
-import rq
 from app import db
 
 class Fan(db.Model):

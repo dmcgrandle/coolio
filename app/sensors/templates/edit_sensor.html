@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ form.disp_title.data }}</h1>
+    <div class="mx-1 shadow-5-strong border border-white rounded" style="max-width: 400px">
+      <form class="mx-auto ms-3" name="form" action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+          {{ form.name.label }}<br>
+          {{ form.name(size=10) }}
+          {% for error in form.name.errors %}
+          <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}
+        </p>
+        <p>The serial number is a 12 digit number unique to this sensor:</p>
+        <p>
+          {{ form.serial.label }}<br>
+          {{ form.serial(size=10) }}
+          {% for error in form.serial.errors %}
+          <span style="color: red;">[{{ error }}]</span>
+          {% endfor %}
+        </p>
+        <p>{{ form.type.label }}:  <span class="ms-2">{{ form.type }}</span><br></p>
+        <p>{{ form.model.label }}:  <span class="ms-2">{{ form.model }}</span><br></p>
+        <p>
+        <p>{{ form.submit() }}</p>
+    </form>
+    </div>
+ 
+{% endblock %}

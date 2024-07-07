@@ -20,9 +20,7 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 pytz==2024.1
 reactivex==4.0.4
-redis==5.0.6
 RPi.GPIO==0.7.1
-rq==1.16.2
 six==1.16.0
 SQLAlchemy==2.0.30
 typing_extensions==4.12.2

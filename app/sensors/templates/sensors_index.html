@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Sensors</h1>
+    <div class="container">
+        <div class="row">
+            {% for form in forms %}
+            <div class="col m-2 shadow-5-strong border border-white rounded" style="max-width: 250px">
+                <h2 class="m-1">{{ form.name.data }}:</h2>
+                <form class="mx-auto ms-3" name="{{ form.name.data }}" action="" method="post">
+                    {{ form.hidden_tag() }}
+                    <div>{{ form.name }}</div> 
+                    <p>
+                        {{ form.serial.label }}: <span>{{ form.serial.data }}</span><br>
+                    </p>
+                    <p>
+                        {{ form.type.label }}: <span>{{ form.type.data }}</span><br>
+                    </p>
+                    <p>
+                        {{ form.model.label }} <span class="ms-3">{{ form.model.data }}</span><br>
+                    </p>
+                    <p>{{ form.edit }} <span class="ms-1">{{ form.delete }}</span></p>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <a class="mt-3 btn btn-primary" href="{{ url_for('sensors.new_sensor') }}" role="button">Add a sensor</a>
+
+{% endblock %}

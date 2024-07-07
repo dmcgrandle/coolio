@@ -1,35 +1,20 @@
 from app import scheduler, db
-from app.temps import bp
-from app.temps.models import Sensor 
+# from app.sensors import bp
 import os, glob, sys, time
-import sqlalchemy as sa
-from rq import get_current_job
-from app import db, scheduler
-from app.temps.models import TempTask, Sensor, TempReading
+from app.sensors.models import Sensor, TempReading
 
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 
 print('Initializing scheduled_tasks')
 
-def read_temp(file):
-    f = open(file, 'r')
-    lines = f.readlines()
-    f.close()
-    position = lines[1].find('t=')+2
-    temperature_f = -460 # absolute zero - indicates an error.  Or the heat death of the universe.
-    if position != -1:
-      temperature_string = lines[1][position:]
-      temperature_c = float(temperature_string) / 1000.0
-      temperature_f = temperature_c * 9.0 / 5.0 + 32.0
-    return temperature_f
-
-@scheduler.task('interval', id='job_sync', seconds=10, max_instances=1, start_date="2000-01-01 12:19:00",)
+"""
+@scheduler.task('interval', id='temp_reading', seconds=10, max_instances=1)
 def interval_temp_reading():
   with db.app.app_context():
     try:
       sensors = Sensor.query.all()
-      if (sensors.__len__ == 0):
+      if not sensors:
         sensor = Sensor(id='0000006a41e9')
         sensors = [ sensor ]
       for sensor in sensors:
@@ -53,3 +38,4 @@ def interval_temp_reading():
       db.app.logger.error('Unhandled exception', exc_info=sys.exc_info())
     finally:
       pass
+"""

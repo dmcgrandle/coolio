@@ -14,7 +14,7 @@ def interval_temp_reading():
     try:
       sensors = TempSensor.query.all()
       if not sensors:
-        sensor = TempSensor(id='0000006a41e9')
+        sensor = TempSensor(id='0000006a41e9', name='Desk')
         sensors = [ sensor ]
       for sensor in sensors:
         file = '/sys/bus/w1/devices/28-' + sensor.id + '/w1_slave'
@@ -30,9 +30,7 @@ def interval_temp_reading():
         reading = TempReading(sensor=sensor, temp=temperature)
         db.session.add(reading)
         db.session.commit()
-      readings = TempReading.query.all()
-      print (readings)
-      print (TempSensor.query.all())
+      print (reading)
     except Exception:
       db.app.logger.error('Unhandled exception', exc_info=sys.exc_info())
     finally:

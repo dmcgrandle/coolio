@@ -7,33 +7,15 @@ from app.fans.models import Fan
 
 @bp.route('/', methods=['GET', 'POST'])
 def fans_index():
-    fans = Fan.query.all()
-    if fans.__len__() == 0:
-      return redirect(url_for('fans.newfan'))
+    if Fan.query.count() == 0:
+      return redirect(url_for('.newfan'))
     form = FanForm(request.form)
     if form.validate_on_submit():
-      for fan in fans:
-        if fan.name == form.name.data: 
-          if form.edit.data == True:
-             return redirect(url_for('fans.edit_fan')+'?name='+fan.name)
-          if form.delete.data == True:
-             db.session.delete(fan)
-             db.session.commit()
-             flash('Fan {} DELETED!'.format(form.name.data))
-             return redirect(url_for('fans.fans_index'))
+        if fan := Fan.query.filter_by(name=form.name.data).first():
           fan.swtch = form.swtch.data
           fan.speed = round(form.speed.data)
           db.session.commit()
-      return redirect(url_for('fans.fans_index'))
-    else: # request.method == 'GET'
-      pass
-    forms = []
-    for fan in fans:
-      form = FanForm()
-      form.name.data = fan.name
-      form.swtch.data = fan.swtch
-      form.speed.data = fan.speed
-      forms.append(form)
+    forms = [FanForm(formdata=None, obj=fan) for fan in Fan.query.all()]
     return render_template('fans_index.html', title='Fans!', forms=forms)
 
 @bp.route('/newfan', methods=['GET', 'POST'])
@@ -42,7 +24,7 @@ def newfan():
     form = EditFanForm(disp_title='New Fan')
     if form.validate_on_submit():
       fan.name = form.name.data
-      fan.id = form.serial.data 
+      fan.id = form.id.data 
       fan.has_swtch = form.has_swtch.data == 'True'
       fan.swtch_pin = form.swtch_pin.data 
       fan.has_pwm = form.has_pwm.data == 'True'

@@ -7,15 +7,15 @@
         {{ form.hidden_tag() }}
         <p>
           {{ form.name.label }}<br>
-          {{ form.name(size=10) }}
+          {{ form.name(size=25) }}
           {% for error in form.name.errors %}
           <span style="color: red;">[{{ error }}]</span>
           {% endfor %}
         </p>
         <p>
-          {{ form.serial.label }}<br>
-          {{ form.serial(size=10) }}
-          {% for error in form.serial.errors %}
+          {{ form.id.label }}<br>
+          {{ form.id(size=18) }}
+          {% for error in form.id.errors %}
           <span style="color: red;">[{{ error }}]</span>
           {% endfor %}
         </p>

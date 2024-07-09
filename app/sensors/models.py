@@ -22,7 +22,7 @@ class TempSensor(Sensor):
     readings: so.WriteOnlyMapped['TempReading'] = so.relationship(back_populates='sensor')
 
     def __repr__(self):
-        return '<Temp Sensor {} type: {} model: {}>'.format(self.name, self.type, self.model)
+        return f'<Temp Sensor {self.name} type: {self.type} model: {self.model}>'
     
     
 # Reading is the database table that holds historical timestamped sensor readings
@@ -38,3 +38,5 @@ class TempReading(Reading):
     temp: so.Mapped[int] = so.mapped_column() # the temperature in degrees Fahrenheit
 
     sensor: so.Mapped[TempSensor] = so.relationship(back_populates='readings')
+    def __repr__(self):
+        return f'<Sensor: {self.sensor.name} Time: {self.timestamp} Temp {self.temp}>'

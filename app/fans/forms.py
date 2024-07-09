@@ -5,7 +5,7 @@ from wtforms.validators import DataRequired
 class EditFanForm(FlaskForm):
     disp_title = StringField('Display Title')
     name = StringField('Name', validators=[DataRequired()])
-    serial = StringField('Serial', validators=[DataRequired()])
+    id = StringField('Serial', validators=[DataRequired()])
     has_swtch = SelectField('Pi can swtch fan power', choices=[('False', ''), ('True', 'Yes'), ('False', 'No')], validate_choice=False)
     swtch_pin = IntegerField('GPIO PIN used for switch', validators=[DataRequired()])
     has_pwm = SelectField('Pi can control speed via PWM', choices=[(False, ''), (True, 'Yes'), (False, 'No')], validate_choice=False)

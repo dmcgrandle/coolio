@@ -8,7 +8,7 @@ class EditSensorForm(FlaskForm):
     serial = StringField('Serial', validators=[DataRequired()])
     type = SelectField('Sensor Type', choices=[('None', ''), ('Temp Sensor', 'Temp Sensor')], validate_choice=False)
     model = SelectField('Sensor Model', choices=[('None', ''), ('DS18B20', 'DS18B20')], validate_choice=True)
-    submit = SubmitField('Save Fan')
+    submit = SubmitField('Save Sensor')
 
 class SensorForm(FlaskForm):
     name = IntegerField('Temp', validators=[DataRequired()])

@@ -4,3 +4,4 @@ logs/
 .vscode
 .env
 app.db
+migrations/

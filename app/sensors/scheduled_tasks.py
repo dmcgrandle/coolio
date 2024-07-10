@@ -2,13 +2,18 @@ from app import scheduler, db
 # from app.sensors import bp
 import os, glob, sys, time
 from app.sensors.models import TempSensor, TempReading
+from app import sm
 
 os.system('modprobe w1-gpio')
 os.system('modprobe w1-therm')
 
 print('Initializing scheduled_tasks')
 
-@scheduler.task('interval', id='temp_reading', seconds=300, max_instances=1)
+run = 0
+
+temps = [ 70, 75, 80, 85, 90, 95, 90, 85, 75, 70, 65, 60, 70, 80, 90 ]
+
+@scheduler.task('interval', id='temp_reading', seconds=10, max_instances=1)
 def interval_temp_reading():
   with db.app.app_context():
     try:
@@ -31,6 +36,10 @@ def interval_temp_reading():
         db.session.add(reading)
         db.session.commit()
       print (reading)
+      # send ficticious temperatures to simulate
+      sm.send(temps[run])
+      print(f'Sent {temps[run]} for run #{run}')
+      run += 1
     except Exception:
       db.app.logger.error('Unhandled exception', exc_info=sys.exc_info())
     finally:

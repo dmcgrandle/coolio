@@ -1,28 +1,49 @@
 from statemachine import StateMachine, State
-from app.sensors.scheduled_tasks import TempReading
+from statemachine.states import States
 from app import db
+from enum import Flag, auto
 
-class Closet(StateMachine):
-  off = State(initial=True)
-  low = State()
-  med = State()
-  high = State()
-  emergency = State()
+class ClosetState(Flag):
+  OFF = auto()
+  LOW = auto()
+  HIGH = auto()
+  EMERGENCY = auto()
+
+class ClosetMachine(StateMachine):
+  states = States.from_enum(ClosetState, initial=ClosetState.OFF)
+  thresholds = {'warm': 75, 'hot': 85, 'problem': 90}
 
   sensor_updated = (
-    off.to(low, cond='is_warm')
-    | off.to.itself(internal=True)
-    | low.to(off, cond='is_cool')
-    | low.to.itself(internal=True)
-    | low.to(med, cond='is_warmer')
-    | med.to(low, cond='is_warm')
-    | med.to.itself(internal=True)
-    | med.to(high, cond='is_hot')
-    | high.to(med, cond='is_warmer')
-    | high.to.itself(internal=True)
-    | high.to(emergency, cond='is_problem')
-    | emergency.to(high, cond='is_hot')
-    | emergency.to.itself(internal=True)
+    states.OFF.itself(internal=True)
+    | states.OFF(states.LOW, cond='is_warm')
+    | states.OFF(states.HIGH, cond='is_hot')
+    | states.OFF(states.EMERGENCY, cond='is_problem')
+    | states.LOW.to(states.OFF, cond='is_cool')
+    | states.LOW.to.itself(internal=True)
+    | states.LOW.to(states.HIGH, cond='is_hot')
+    | states.LOW.to(states.EMERGENCY, cond='is_problem')
+    | states.HIGH.to(states.OFF, cond='is_cool')
+    | states.HIGH.to(states.LOW, cond='is_warm')
+    | states.HIGH.to.itself(internal=True)
+    | states.HIGH.to(states.EMERGENCY, cond='is_problem')
+    | states.EMERGENCY.to(states.OFF, cond='is_cool')
+    | states.EMERGENCY.to(states.LOW, cond='is_warm')
+    | states.EMERGENCY.to(states.HIGH, cond='is_hot')
+    | states.EMERGENCY.to.itself(internal=True)
   )
 
+  async def is_cool(self, temp: int):
+    return temp < self.thresholds['warm']
+
+  async def is_warm(self, temp: int):
+    return temp >= self.thresholds['warm'] and temp < self.thresholds['hot']
+
+  async def is_hot(self, temp: int):
+    return temp >= self.thresholds['hot'] and temp < self.thresholds['problem']
+
+  async def is_problem(self, temp: int):
+    return temp >= self.thresholds['problem']
   
+  async def after_transition(self, event: str, source: State, target: State, event_data):
+        print(f"Running {event} from {source!s} to {target!s}: {event_data.trigger_data.kwargs!r}")
+

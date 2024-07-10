@@ -8,11 +8,13 @@ from flask_migrate import Migrate
 from flask_moment import Moment
 from flask_apscheduler import APScheduler
 from config import Config
+from main.closet_state import ClosetMachine
 
 moment = Moment()
 db = SQLAlchemy()
 migrate = Migrate()
 scheduler = APScheduler()
+sm = ClosetMachine()
 
 def create_app(config_class=Config):
   app = Flask(__name__)
@@ -23,8 +25,8 @@ def create_app(config_class=Config):
   moment.init_app(app)
   scheduler.api_enabled = True
   scheduler.init_app(app)
+  sm.activate_initial_state()
 
-  
   #if os.environ.get('WERKZEUG_RUN_MAIN') == "true":
   with app.app_context():
     print('load scheduler')

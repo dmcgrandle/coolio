@@ -28,14 +28,14 @@ class TempSensor(Sensor):
 # Reading is the database table that holds historical timestamped sensor readings
 class Reading(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    sensor_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Sensor.id), index=True)
     timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
 
     def __repr__(self):
-        return '<Time: {} Temp {}>'.format(self.timestamp, self.temp)
+        return f'<Time: {self.timestamp}>'.format(self.timestamp, self.temp)
 
 class TempReading(Reading):
     temp: so.Mapped[int] = so.mapped_column() # the temperature in degrees Fahrenheit
+    sensor_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Sensor.id), index=True)
 
     sensor: so.Mapped[TempSensor] = so.relationship(back_populates='readings')
     def __repr__(self):

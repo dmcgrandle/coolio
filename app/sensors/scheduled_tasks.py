@@ -15,6 +15,7 @@ temps = [ 70, 75, 80, 85, 90, 95, 90, 85, 75, 70, 65, 60, 70, 80, 90 ]
 
 @scheduler.task('interval', id='temp_reading', seconds=10, max_instances=1)
 def interval_temp_reading():
+  global run
   with db.app.app_context():
     try:
       sensors = TempSensor.query.all()
@@ -37,7 +38,7 @@ def interval_temp_reading():
         db.session.commit()
       print (reading)
       # send ficticious temperatures to simulate
-      sm.send(temps[run])
+      sm.send('sensor_updated', temp=temps[run])
       print(f'Sent {temps[run]} for run #{run}')
       run += 1
     except Exception:

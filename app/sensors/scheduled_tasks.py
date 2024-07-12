@@ -4,14 +4,12 @@ import os, glob, sys, time
 from app.sensors.models import TempSensor, TempReading
 from app import sm
 
-os.system('modprobe w1-gpio')
-os.system('modprobe w1-therm')
-
-print('Initializing scheduled_tasks')
+if os.system('sudo modprobe w1-gpio') or os.system('sudo modprobe w1-therm'): # returns zero if all is good, else 256
+  sys.exit('No temp sensors detected!\nCoolio requires at least one temp sensor.  Exiting.')
 
 run = 0
 
-temps = [ 70, 75, 80, 85, 90, 95, 90, 85, 75, 70, 65, 60, 70, 80, 90 ]
+temps = [ 69, 70, 71, 72, 75, 75, 85, 90, 95, 90, 85, 75, 70, 65, 60, 70, 80, 90 ]
 
 @scheduler.task('interval', id='temp_reading', seconds=10, max_instances=1)
 def interval_temp_reading():
@@ -41,7 +39,10 @@ def interval_temp_reading():
       sm.send('sensor_updated', temp=temps[run])
       print(f'Sent {temps[run]} for run #{run}')
       run += 1
-    except Exception:
-      db.app.logger.error('Unhandled exception', exc_info=sys.exc_info())
+    except Exception as e:
+      if e.errno == 2:
+        db.app.logger.error(f'Sensor "{sensor.name}" was not found - wrong serial #?', exc_info=sys.exc_info())
+      else:
+        db.app.logger.error('Unhandled exception', exc_info=sys.exc_info())
     finally:
       pass

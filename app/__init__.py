@@ -25,7 +25,7 @@ def create_app(config_class=Config):
   migrate.init_app(app, db)
   moment.init_app(app)
   scheduler.init_app(app)
-#  sm.init_app(app)
+  sm.activate_initial_state()
 
   #if os.environ.get('WERKZEUG_RUN_MAIN') == "true":
   with app.app_context():

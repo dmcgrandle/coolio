@@ -5,7 +5,7 @@ import sqlalchemy as sa
 from app import db
 from app.sensors import bp
 from app.sensors.forms import EditSensorForm, SensorForm
-from app.sensors.models import TempSensor, TempReading
+from app.models import TempSensor
 
 @bp.route('/', methods=['GET', 'POST'])
 def sensors_index():

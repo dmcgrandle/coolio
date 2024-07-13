@@ -1,21 +1,29 @@
 from statemachine import StateMachine, State
 from statemachine.states import States
-#from app import db
 from enum import Flag, auto
 
-class ClosetState(Flag):
+class EnvironmentState(Flag):
+  """
+  The three states of the environment a fan will be cooling:
+  - Cool: fan is off, environment is cool
+  - Warm: we are between two threshold temperature values 'min' and 'max'.
+    In this state the fan speed will be varied up or down with temperature
+    changes.
+  - Hot: the max temperature has been exceeded.  Need to send an alert and
+    turn fan to max.
+  """
   COOL = auto()
   WARM = auto()
   HOT = auto()
 
-class ClosetMachine(StateMachine):
-  states = States.from_enum(ClosetState, initial=ClosetState.COOL)
+class EnvStateMachine(StateMachine):
+  states = States.from_enum(EnvironmentState, initial=EnvironmentState.COOL)
 
   sensor_updated = (
-    states.COOL.to(states.WARM, cond='between')
+    states.COOL.to(states.WARM, cond='between_min_and_max')
     | states.WARM.to(states.COOL, cond='below_min')
     | states.WARM.to(states.HOT, cond='above_max')
-    | states.HOT.to(states.WARM, cond='between')
+    | states.HOT.to(states.WARM, cond='between_min_and_max')
     | states.WARM.to.itself()
     | states.COOL.to.itself(internal=True)
     | states.HOT.to.itself(internal=True)
@@ -28,7 +36,7 @@ class ClosetMachine(StateMachine):
     self.fan_increment = round(100/(self.thresholds['max'] - self.thresholds['min']))
     super().__init__()
 
-  async def between(self, temp: int):
+  async def between_min_and_max(self, temp: int):
     return temp >= self.thresholds['min'] and temp <= self.thresholds['max']
 
   async def below_min(self, temp: int):
@@ -48,9 +56,7 @@ class ClosetMachine(StateMachine):
 
   async def on_enter_WARM(self, temp: int):
     print('entering WARM state')
-    print(f'Fan speed before adjustment: {self.fan_speed}')
     self.fan_speed = (temp - self.thresholds['min'])*self.fan_increment
-    print(f'Fan speed after adjustment: {self.fan_speed}')
     self.fan_is_on = True
 
   async def on_enter_HOT(self):

@@ -8,13 +8,11 @@ from flask_migrate import Migrate
 from flask_moment import Moment
 from flask_apscheduler import APScheduler
 from config import Config
-from app.main.closet_state import ClosetMachine
 
 moment = Moment()
 db = SQLAlchemy()
 migrate = Migrate()
 scheduler = APScheduler()
-sm = ClosetMachine()
 
 def create_app(config_class=Config):
   print('in create_app')
@@ -25,7 +23,6 @@ def create_app(config_class=Config):
   migrate.init_app(app, db)
   moment.init_app(app)
   scheduler.init_app(app)
-  sm.activate_initial_state()
 
   #if os.environ.get('WERKZEUG_RUN_MAIN') == "true":
   with app.app_context():
@@ -44,7 +41,11 @@ def create_app(config_class=Config):
 
   from app.main import bp as main_bp
   app.register_blueprint(main_bp)
-  
+
+  from app.main.environment_state import EnvStateMachine
+  app.sm = EnvStateMachine()
+  app.sm.activate_initial_state()
+
   # if not app.debug and not app.testing:
   if not os.path.exists('logs'):
     os.mkdir('logs')

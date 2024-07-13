@@ -1,9 +1,9 @@
 from flask import render_template, flash, redirect, url_for, request
 import sqlalchemy as sa
 from app import db
-from app.fans import bp
-from app.fans.forms import EditFanForm, FanForm
-from app.fans.models import Fan
+from . import bp
+from .forms import EditFanForm, FanForm
+from app.models import Fan
 
 @bp.route('/', methods=['GET', 'POST'])
 def fans_index():

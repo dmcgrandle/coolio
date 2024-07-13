@@ -1,8 +1,8 @@
 from app import scheduler, db
 # from app.sensors import bp
 import os, glob, sys, time
-from app.sensors.models import TempSensor, TempReading
-from app import sm
+from app.models import TempSensor, TempReading
+from flask import current_app
 
 if os.system('sudo modprobe w1-gpio') or os.system('sudo modprobe w1-therm'): # returns zero if all is good, else 256
   sys.exit('No temp sensors detected!\nCoolio requires at least one temp sensor.  Exiting.')
@@ -34,15 +34,16 @@ def interval_temp_reading():
         reading = TempReading(sensor=sensor, temp=temperature)
         db.session.add(reading)
         db.session.commit()
+        current_app.logger.info(f'Temp Sensor "{sensor.name}" temperature taken {temperature}')
       print (reading)
       # send ficticious temperatures to simulate
-      sm.send('sensor_updated', temp=temps[run])
+      current_app.sm.send('sensor_updated', temp=temps[run])
       print(f'Sent {temps[run]} for run #{run}')
       run += 1
     except Exception as e:
-      if e.errno == 2:
-        db.app.logger.error(f'Sensor "{sensor.name}" was not found - wrong serial #?', exc_info=sys.exc_info())
+      if e.errno and e.errno == 2:
+        current_app.logger.error(f'Sensor "{sensor.name}" was not found - wrong serial #?', exc_info=sys.exc_info())
       else:
-        db.app.logger.error('Unhandled exception', exc_info=sys.exc_info())
+        current_app.logger.error('Unhandled exception', exc_info=sys.exc_info())
     finally:
       pass

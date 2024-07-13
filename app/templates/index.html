@@ -3,6 +3,9 @@
 
 {% block content %}
     <h1>Welcome to Coolio!</h1>
-    <p>Current time is: {{ moment().format('MMMM Do YYYY, h:mm:ss a') }}</p>
-    <p>Make a selection from the menu above.</p>
+    <p>Current time is: {{ moment().format('MMMM Do YYYY, h:mm:ss a') }}</p><br>
+    <p>Set up your Fans and Sensors using the links above.  Then return here and set up automations.</p>
+
+    <a class="mt-3 btn btn-primary" href="{{ url_for('automations') }}" role="button">Setup Automations</a>
+
 {% endblock %}

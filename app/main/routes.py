@@ -16,8 +16,17 @@ def automations():
     form = AutomationForm(request.form)
     if form.validate_on_submit():
         if auto := Automation.query.filter_by(name=form.name.data).first():
-          auto.swtch = form.swtch.data
-          auto.speed = round(form.speed.data)
+          if form.edit.data == True:
+            return redirect(url_for('.editautomation')+'?name='+auto.name)
+          elif form.delete.data == True:
+            db.session.delete(auto)
+            db.session.commit()
+            flash('Automation {} DELETED!'.format(form.name.data))
+            # return redirect(url_for('.automations'))
+          else:
+            pass #todo: implement error conditions
+
+          auto.enabled = form.enabled.data
           db.session.commit()
     forms = [AutomationForm(formdata=None, obj=auto) for auto in Automation.query.all()]
     return render_template('automations.html', title='Automations', forms=forms)
@@ -32,14 +41,8 @@ def newautomation():
       redirect(url_for('main.index'))
     form = EditAutomationForm(disp_title='New Automation')
     if form.validate_on_submit():
-#      if auto := Automation.query.filter_by(name=form.name.data).first():
-      auto = Automation()
-      auto.name = form.name.data
-      auto.sensor_name = form.sensor_name.data
-      auto.fan_name = form.fan_name.data
-      auto.temp_max = form.temp_max.data
-      auto.temp_min = form.temp_min.data
-      auto.enabled = False
+      # if auto := Automation.query.filter_by(name=form.name.data).first():
+      auto = Automation(form)
       db.session.add(auto)
       db.session.commit()
       flash(f'Created new automation {auto.name}')
@@ -51,9 +54,13 @@ def newautomation():
 
 @bp.route('/editautomation', methods=['GET', 'POST'])
 def editautomation():
+    if not (auto := Automation.query.filter_by(name=request.args.get('name')).first()):
+      flash(f'Fan {request.args.get("name")} not found')
+      return redirect(url_for('fans.fans_index'))
+      #todo: handle errors better
     form = EditAutomationForm(request.form, disp_title='Edit Automation')
     if form.validate_on_submit():
-      if auto := Automation.query.filter_by(name=form.name.data).first():
+      #if auto := Automation.query.filter_by(name=form.name.data).first():
         auto.name = form.name.data
         auto.sensor = form.sensor.data
         auto.fan = form.fan.data

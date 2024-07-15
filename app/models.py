@@ -73,3 +73,14 @@ class Automation(db.Model):
     enabled: so.Mapped[bool] = so.mapped_column()
     sensor_name: so.Mapped[str] = so.mapped_column(sa.String(64))
     fan_name: so.Mapped[str] = so.mapped_column(sa.String(64))
+
+    def __init__(self, form=None):
+        super().__init__()
+        if form:
+          self.name = form.name.data
+          self.sensor_name = form.sensor_name.data
+          self.fan_name = form.fan_name.data
+          self.temp_max = form.temp_max.data
+          self.temp_min = form.temp_min.data
+          self.enabled = False
+        return self

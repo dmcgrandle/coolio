@@ -25,10 +25,10 @@ def create_app(config_class=Config):
   scheduler.init_app(app)
 
   #if os.environ.get('WERKZEUG_RUN_MAIN') == "true":
-  with app.app_context():
-    print('load scheduler')
-    from app.sensors import scheduled_tasks
-    scheduler.start()
+#  with app.app_context():
+#    print('load scheduler')
+#    from app.sensors import scheduled_tasks
+#    scheduler.start()
 
   from app.errors import bp as errors_bp
   app.register_blueprint(errors_bp)
@@ -42,9 +42,9 @@ def create_app(config_class=Config):
   from app.main import bp as main_bp
   app.register_blueprint(main_bp)
 
-  from app.main.environment_state import EnvStateMachine
-  app.sm = EnvStateMachine()
-  app.sm.activate_initial_state()
+#  from app.main.environment_state import EnvStateMachine
+#  app.sm = EnvStateMachine()
+#  app.sm.activate_initial_state()
 
   # if not app.debug and not app.testing:
   if not os.path.exists('logs'):

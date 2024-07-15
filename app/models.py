@@ -17,7 +17,6 @@ class Sensor(db.Model):
 class TempSensor(Sensor):
     model: so.Mapped[str] = so.mapped_column(sa.String(64)) # exact model
     
-    auto: so.WriteOnlyMapped['Automation'] = so.relationship(back_populates='sensor')
     readings: so.WriteOnlyMapped['TempReading'] = so.relationship(back_populates='sensor')
 
     def __repr__(self):
@@ -51,7 +50,6 @@ class Fan(db.Model):
     speed: so.Mapped[int] = so.mapped_column()
 # mapped var pointing to table of past speed changes
     speed_changes: so.WriteOnlyMapped['SpeedChange'] = so.relationship(back_populates='fan', passive_deletes=True)
-    auto: so.WriteOnlyMapped['Automation'] = so.relationship(back_populates='fan')
     def __repr__(self):
         return '<Fan {} - on? {} - last speed {}>'.format(self.name, self.is_on, self.speed)
 
@@ -68,13 +66,10 @@ class SpeedChange(db.Model):
         return '<Speed {}'.format(self.speed)+', Change Reason {}'.format(self.change_reason)+', fan {}>'.format(self.fan)
 
 class Automation(db.Model):
-  id: so.Mapped[int] = so.mapped_column(primary_key=True)
-  name: so.Mapped[str] = so.mapped_column(sa.String(64), unique=True)
-  temp_max: so.Mapped[float] = so.mapped_column()
-  temp_min: so.Mapped[float] = so.mapped_column()
-  enabled: so.Mapped[bool] = so.mapped_column()
-  fan_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Fan.id), index=True)
-  sensor_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(TempSensor.id), index=True)
-  
-  sensor: so.Mapped[TempSensor] = so.relationship(back_populates='auto')
-  fan: so.Mapped[Fan] = so.relationship(back_populates='auto')
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    name: so.Mapped[str] = so.mapped_column(sa.String(64), unique=True)
+    temp_max: so.Mapped[float] = so.mapped_column()
+    temp_min: so.Mapped[float] = so.mapped_column()
+    enabled: so.Mapped[bool] = so.mapped_column()
+    sensor_name: so.Mapped[str] = so.mapped_column(sa.String(64))
+    fan_name: so.Mapped[str] = so.mapped_column(sa.String(64))

@@ -6,10 +6,9 @@
         <div class="row">
             {% for form in forms %}
             <div class="col m-2 shadow-5-strong border border-white rounded" style="max-width: 250px">
-                <h2 class="m-1">{{ form.name.data }}:</h2>
                 <form class="mx-auto ms-3" name="{{ form.name.data }}" action="" method="post">
                     {{ form.hidden_tag() }}
-                    <div>{{ form.name }}</div> 
+                    <h2>{{ form.name.data }}: <span class="invisible">{{ form.name(size=1) }}</span></h2>
                     <p>
                         {{ form.speed.label }}: <span class="speed_display_val">{{ form.speed.data | round }}%</span><br>
                         {{ form.speed(min=20) }}<br>
@@ -30,7 +29,7 @@
         </div>
     </div>
 
-    <a class="mt-3 btn btn-primary" href="{{ url_for('fans.newfan') }}" role="button">Add a fan</a>
+    <a class="mt-3 btn btn-primary" href="{{ url_for('fans.new_fan') }}" role="button">Add a fan</a>
 
     <script src="{{url_for('fans.static', filename='fans.js')}}"></script>
 

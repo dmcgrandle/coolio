@@ -9,6 +9,7 @@ class EditAutomationForm(FlaskForm):
     fan_name = SelectField('Choose a fan', validate_choice=False)
     temp_max = FloatField('Maximum Temperature', validators=[DataRequired()])
     temp_min = FloatField('Minimum Temperature', validators=[DataRequired()])
+    enabled = BooleanField('Enabled')
     submit = SubmitField('Save Automation')
 
 class AutomationForm(FlaskForm):

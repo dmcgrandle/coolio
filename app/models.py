@@ -50,8 +50,27 @@ class Fan(db.Model):
     speed: so.Mapped[int] = so.mapped_column()
 # mapped var pointing to table of past speed changes
     speed_changes: so.WriteOnlyMapped['SpeedChange'] = so.relationship(back_populates='fan', passive_deletes=True)
+    
     def __repr__(self):
         return '<Fan {} - on? {} - last speed {}>'.format(self.name, self.is_on, self.speed)
+    
+    def __init__(self, form=None):
+        super().__init__()
+        if form == None:
+          return self
+        else:
+          return self.copy_from_form(form)
+
+    def copy_from_form(self, form):
+        self.name = form.name.data
+        self.id = form.id.data 
+        self.has_swtch = form.has_swtch.data == 'True'
+        self.swtch_pin = form.swtch_pin.data 
+        self.has_pwm = form.has_pwm.data == 'True'
+        self.pwm_pin = form.pwm_pin.data
+        self.swtch = form.swtch.data == 'True'
+        self.speed = round(float(form.speed.data), 1)
+        return self
 
 class SpeedChange(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
@@ -77,10 +96,17 @@ class Automation(db.Model):
     def __init__(self, form=None):
         super().__init__()
         if form:
-          self.name = form.name.data
-          self.sensor_name = form.sensor_name.data
-          self.fan_name = form.fan_name.data
-          self.temp_max = form.temp_max.data
-          self.temp_min = form.temp_min.data
+          self.copy_from_form(form)
+        return self
+    
+    def copy_from_form(self, form):
+        self.name = form.name.data
+        self.sensor_name = form.sensor_name.data
+        self.fan_name = form.fan_name.data
+        self.temp_max = form.temp_max.data
+        self.temp_min = form.temp_min.data
+        if form.enabled.data == None:
           self.enabled = False
+        else:
+          self.enabled = form.enabled.data
         return self

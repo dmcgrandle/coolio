@@ -3,10 +3,10 @@
 {% block content %}
     <h1>Fans</h1>
     <div class="container">
-        <div class="row">
+        <div class="row row-cols-auto">
             {% for form in forms %}
-            <div class="col m-2 shadow-5-strong border border-white rounded" style="max-width: 250px">
-                <form class="mx-auto ms-3" name="{{ form.name.data }}" action="" method="post">
+            <div class="col m-1 shadow-5-strong border border-white rounded">
+                <form class="m-2" name="{{ form.name.data }}" action="" method="post">
                     {{ form.hidden_tag() }}
                     <h2>{{ form.name.data }}: <span class="invisible">{{ form.name(size=1) }}</span></h2>
                     <p>

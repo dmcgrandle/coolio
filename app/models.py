@@ -59,7 +59,8 @@ class Fan(db.Model):
         for key, value in form.data.items():
           if hasattr(self, key):
             setattr(self, key, value)
-        self.speed = round(self.speed) # workaround because DecimalRangeField can't coerce to int
+        if self.speed:
+          self.speed = round(self.speed) # workaround because DecimalRangeField can't coerce to int
         return self
 
 class SpeedChange(db.Model):

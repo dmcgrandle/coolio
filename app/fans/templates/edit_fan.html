@@ -2,7 +2,7 @@
 
 {% block content %}
     <h1>{{ form.disp_title.data }}</h1>
-    <div class="mx-1 shadow-5-strong border border-white rounded" style="max-width: 400px">
+    <div class="mx-1 shadow-5-strong border border-white rounded" style="width: 410px">
       <form class="mx-auto ms-3" name="form" action="" method="post">
         {{ form.hidden_tag() }}
         <p>
@@ -35,7 +35,7 @@
           <span style="color: red;">[{{ error }}]</span>
           {% endfor %}
         </p>
-        <p>{{ form.submit() }}</p>
+        <p>{{ form.cancel }} <span class="ms-1">{{ form.save }}</span></p>
     </form>
     </div>
  

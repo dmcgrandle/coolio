@@ -3,15 +3,26 @@ from wtforms import DecimalRangeField, DecimalField, BooleanField, StringField, 
 from wtforms.validators import DataRequired
 from decimal import ROUND_HALF_UP
 
+def coerce_bool(value):
+    test = value == 'Yes' or value == True
+    return test
+
 class EditFanForm(FlaskForm):
     disp_title = StringField('Display Title')
     name = StringField('Name', validators=[DataRequired()])
     id = IntegerField('Serial', validators=[DataRequired()])
-    has_swtch = SelectField('Pi can swtch fan power', choices=[(False, ''), (True, 'Yes'), (False, 'No')], validate_choice=False, coerce=bool)
+    has_swtch = SelectField('Pi can swtch fan power', 
+                            choices=['', 'Yes', 'No'],
+                            validate_choice=False,
+                            coerce=lambda x: x == 'Yes' or x == True)
     swtch_pin = IntegerField('GPIO PIN used for switch', validators=[DataRequired()])
-    has_pwm = SelectField('Pi can control speed via PWM', choices=[(False, ''), (True, 'Yes'), (False, 'No')], validate_choice=False, coerce=bool)
+    has_pwm = SelectField('Pi can control speed via PWM', 
+                          choices=['', 'Yes', 'No'], 
+                          validate_choice=False,
+                          coerce=lambda x: x == 'Yes' or x == True)
     pwm_pin = IntegerField('GPIO PIN used for PWM', validators=[DataRequired()])
-    submit = SubmitField('Save Fan')
+    cancel = SubmitField('Cancel', render_kw={'class': 'btn btn-outline-secondary'})
+    save = SubmitField('Save Fan', render_kw={'class': 'btn btn-outline-primary'})
 
 class FanForm(FlaskForm):
     name = HiddenField('Name')

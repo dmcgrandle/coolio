@@ -16,10 +16,9 @@ def fans_index():
           return redirect(url_for('.edit_fan')+'?name='+fan.name)
         elif form.delete.data == True:
           db.session.delete(fan)
-          flash(f'DELETED Automation: {form.name.data}')
+          flash(f'DELETED Fan: {form.name.data}')
         else:
           fan.copy_from_form(form)
-          #todo: launch the automation
         db.session.commit()
     forms = [FanForm(formdata=None, obj=fan) for fan in Fan.query.all()]
     return render_template('fans_index.html', title='Fans', forms=forms)

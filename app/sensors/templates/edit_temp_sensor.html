@@ -14,9 +14,9 @@
         </p>
         <p>The serial number is a 12 digit number unique to this sensor:</p>
         <p>
-          {{ form.serial.label }}<br>
-          {{ form.serial(size=10) }}
-          {% for error in form.serial.errors %}
+          {{ form.id.label }}<br>
+          {{ form.id(size=18) }}
+          {% for error in form.id.errors %}
           <span style="color: red;">[{{ error }}]</span>
           {% endfor %}
         </p>

@@ -4,80 +4,66 @@ from urllib.parse import urlsplit
 import sqlalchemy as sa
 from app import db
 from app.sensors import bp
-from app.sensors.forms import EditSensorForm, SensorForm
-from app.models import TempSensor
+from app.sensors.forms import EditTempSensorForm, SensorForm, NewSensorForm
+from app.models import Sensor, TempSensor
 
 @bp.route('/', methods=['GET', 'POST'])
 def sensors_index():
-    sensors = TempSensor.query.all()
-    if sensors.__len__() == 0:
-      return redirect(url_for('sensors.new_sensor'))
+    if Sensor.query.count() == 0:
+      return redirect(url_for('.new_sensor'))
     form = SensorForm(request.form)
     if form.validate_on_submit():
-      for sensor in sensors:
-        if sensor.name == form.name.data:
-          if form.edit.data == True:
-            return redirect(url_for('sensors.new_sensor')+'?name='+sensor.name)
-          elif form.delete.data == True:
-            db.session.delete(sensor)
-            db.session.commit()
-            flash('Sensor {} DELETED!'.format(form.name.data))
-            return redirect(url_for('sensors.sensors_index'))
-          else:
-            pass #todo: implement error conditions
-    else: #request.method == 'GET'
-       pass
-    forms = []
-    for sensor in sensors:
-      query = sensor.readings.select()
-      reading = db.session.scalars(query).first()
-      form = SensorForm()
-      form.name.data = sensor.name
-      if reading:
-        form.reading.data = reading.temp
-        form.timestamp.data = reading.timestamp.astimezone(
-            pytz.timezone('America/Los_Angeles')
-          ).strftime('%m/%d/%y, %H:%M:%S')
-      form.serial.data = sensor.id
-      form.type.data = sensor.type
-      form.model.data = sensor.model
-      forms.append(form)
-    return render_template('sensors_index.html', title='Sensors', forms=forms)
+      if sensor := Sensor.query.filter_by(name=form.name.data).first():
+        if form.edit.data == True and sensor.type == 'Temp Sensor':
+          return redirect(url_for('.edit_temp_sensor')+'?name='+sensor.name)
+        # future: add redirect for another sensor.type here
+        elif form.delete.data == True:
+          db.session.delete(sensor)
+          flash(f'DELETED Sensor: {form.name.data}')
+        else:
+          pass # nothing to update with SensorForm
+        db.session.commit()
+      else:
+         pass #todo: handle error of name not found
+    data = []
+    for sensor in Sensor.query.all():
+      form = SensorForm(formdata=None, obj=sensor)
+      type_sensor = None
+      reading = None
+      if sensor.type == 'Temp Sensor':
+        type_sensor = TempSensor.query.filter_by(name=sensor.name).first()
+        reading = db.session.scalars(type_sensor.readings.select()).first()
+      # elif sensor.type == 'Another': #todo: add for another sensor.type
+      data.append((form, type_sensor, reading))
+    return render_template('sensors_index.html', title='Sensors', data=data)
 
-@bp.route('/newsensor', methods=['GET', 'POST'])
+@bp.route('/new_sensor', methods=['GET', 'POST'])
 def new_sensor():
-    sensor = TempSensor()
-    form = EditSensorForm(disp_title='New Sensor')
+    form = NewSensorForm(request.form)
     if form.validate_on_submit():
-      sensor.name = form.name.data
-      sensor.id = form.serial.data 
-      sensor.type = form.type.data
-      sensor.model = form.model.data
-      db.session.add(sensor)
-      db.session.commit()
-      flash('Created new {} named {}'.format(sensor.type, sensor.name))
-      return redirect(url_for('sensors.sensors_index'))
-    return render_template('edit_sensor.html', title='New Sensor', form=form)
-
-@bp.route('/editsensor', methods=['GET', 'POST'])
-def edit_sensor():
-    sensor = TempSensor.query.filter_by(name=request.args.get('name')).first()
-    if sensor == None:
-       flash('Sensor {} not found'.format(request.args.get('name')))
-       return redirect(url_for('sensors.sensors_index'))
-    form = EditSensorForm(request.form)
+      if form.cancel.data == True:
+        return redirect(url_for('.sensors_index'))
+      elif form.next.data == True:
+        if form.type.data == 'Temp Sensor':
+           return redirect(url_for('.edit_temp_sensor')+'?name=_new_')
+        else:
+           flash('Must choose a sensor type, or cancel.')
+    return render_template('new_sensor.html', title='New Sensor', form=form)
+   
+@bp.route('/edit_temp_sensor', methods=['GET', 'POST'])
+def edit_temp_sensor():
+    if (name := request.args.get('name')) == '_new_':
+      temp_sensor = TempSensor()
+      prefixes = ('New', 'Created New')
+    else:
+      temp_sensor = TempSensor.query.filter_by(name=name).first()
+      prefixes = ('Edit', 'Edited')
+    form = EditTempSensorForm(request.form)
     if form.validate_on_submit():
-      sensor.name = form.name.data
-      sensor.id = form.serial.data 
-      sensor.type = form.type.data
-      sensor.model = form.model.data
+      temp_sensor.copy_from_form(form)
+      db.session.add(temp_sensor)
       db.session.commit()
-      flash('Edited {} named {}'.format(sensor.type, sensor.name))
-      return redirect(url_for('sensors.sensors_index'))
-    elif request.method == 'GET':
-       form.disp_title.data = 'Edit Sensor'
-       form.name.data = sensor.name
-       form.serial.data = sensor.id
-       form.type.data = sensor.type
-       form.model.data = sensor.model
-    return render_template('edit_sensor.html', title='Edit Sensor', form=form)
+      flash(f'{prefixes[1]} Temp Sensor named {temp_sensor.name}')
+      return redirect(url_for('.sensors_index'))
+    form = EditTempSensorForm(formdata=None, obj=temp_sensor)
+    return render_template('edit_temp_sensor.html', title=f'{prefixes[0]} Temp Sensor', form=form)

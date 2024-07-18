@@ -3,23 +3,23 @@
 {% block content %}
     <h1>Sensors</h1>
     <div class="container">
-        <div class="row">
-            {% for form in forms %}
+        <div class="row row-cols-auto">
+            {% for form, sensor, reading in data %}
             <div class="col m-1 shadow-5-strong border border-white rounded">
-                <h2 class="m-2">{{ form.name.data }}:</h2>
-                <form class="mx-auto ms-3" name="{{ form.name.data }}" action="" method="post">
+                <form class="m-2" name="{{ form.name.data }}" action="" method="post">
                     {{ form.hidden_tag() }}
-                    <h5>Latest Reading:</h5>
-                    <p>
-                      {{ form.reading.label }}: <span>{{ form.reading.data }} &#176;F</span><br>
-                      time: {{ form.timestamp.data }}
-                    </p>
-                    <h5>Details:</h5>
-                    <p>
-                        {{ form.serial.label }}: <span>{{ form.serial.data }}</span><br>
-                        {{ form.type.label }}: <span>{{ form.type.data }}</span><br>
-                        {{ form.model.label }} <span class="ms-3">{{ form.model.data }}</span><br>
-                    </p>
+                    <h2>{{ form.name.data }}: <span class="invisible">{{ form.name(size=1) }}</span></h2>
+                    {% if sensor.type == 'Temp Sensor' -%}
+                        <h5>Temperature Sensor</h5>
+                        <p>
+                          Serial: <span>{{ sensor.id }}</span><br>
+                          Model: <span>{{ sensor.model }}</span><br>
+                        </p>
+                        <p>
+                          Latest Reading: <span>{{ reading.temp | round(1) }} &#176;F</span><br>
+                          time: {{ moment(reading.timestamp).format('LLL') }}
+                        </p>
+                    {% endif %}
                     <p>{{ form.edit }} <span class="ms-1">{{ form.delete }}</span></p>
                 </form>
             </div>

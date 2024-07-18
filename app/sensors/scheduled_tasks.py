@@ -31,13 +31,13 @@ def interval_temp_reading():
           temperature_string = lines[1][position:]
           temperature_c = float(temperature_string) / 1000.0
           temperature = temperature_c * 9.0 / 5.0 + 32.0
-        reading = TempReading(sensor=sensor, temp=temperature)
+        reading = TempReading(temp_sensor=sensor, temp=temperature)
         db.session.add(reading)
         db.session.commit()
         current_app.logger.info(f'Temp Sensor "{sensor.name}" temperature taken {temperature}')
       print (reading)
       # send ficticious temperatures to simulate
-      current_app.sm.send('sensor_updated', temp=temps[run])
+      #current_app.sm.send('sensor_updated', temp=temps[run])
       print(f'Sent {temps[run]} for run #{run}')
       run += 1
     except Exception as e:

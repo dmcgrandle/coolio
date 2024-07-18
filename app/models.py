@@ -3,6 +3,12 @@ import sqlalchemy as sa
 import sqlalchemy.orm as so
 from app import db
 
+def copy_to_obj_from_form(obj, form):
+    for key, value in form.data.items():
+      if hasattr(obj, key):
+        setattr(obj, key, value)
+    return obj
+
 class Sensor(db.Model):
     id: so.Mapped[str] = so.mapped_column(primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(64), unique=True)
@@ -17,6 +23,15 @@ class TempSensor(Sensor):
     def __repr__(self):
         return f'<Temp Sensor {self.name} type: {self.type} model: {self.model}>'
     
+    def __init__(self, form=None):
+        super().__init__()
+        if form: self.copy_from_form(form)
+        return self
+
+    def copy_from_form(self, form):
+        self = copy_to_obj_from_form(self, form)
+        return self
+    
 # Reading is the database table that holds historical timestamped sensor readings
 class Reading(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
@@ -29,7 +44,7 @@ class TempReading(Reading):
     temp_sensor: so.Mapped[TempSensor] = so.relationship(back_populates='readings')
 
     def __repr__(self):
-        return f'<Temp Reading: {self.sensor.name} Time: {self.timestamp} Temp {self.temp}>'
+        return f'<Temp Reading: {self.temp_sensor.name} Time: {self.timestamp} Temp {self.temp}>'
 
 class Fan(db.Model):
     id: so.Mapped[str] = so.mapped_column(sa.String(36), primary_key=True)
@@ -56,9 +71,7 @@ class Fan(db.Model):
         return self
 
     def copy_from_form(self, form):
-        for key, value in form.data.items():
-          if hasattr(self, key):
-            setattr(self, key, value)
+        self = copy_to_obj_from_form(self, form)
         if self.speed:
           self.speed = round(self.speed) # workaround because DecimalRangeField can't coerce to int
         return self

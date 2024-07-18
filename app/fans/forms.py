@@ -1,29 +1,21 @@
 from flask_wtf import FlaskForm
-from wtforms import DecimalRangeField, BooleanField, StringField, HiddenField, SubmitField, SelectField , validators, IntegerField
+from wtforms import DecimalRangeField, DecimalField, BooleanField, StringField, HiddenField, SubmitField, SelectField , validators, IntegerField
 from wtforms.validators import DataRequired
+from decimal import ROUND_HALF_UP
 
-class FanForm(FlaskForm):
+class EditFanForm(FlaskForm):
     disp_title = StringField('Display Title')
     name = StringField('Name', validators=[DataRequired()])
-    id = StringField('Serial', validators=[DataRequired()])
-    swtch = BooleanField('Switch', render_kw={'class': 'swtch'})
-    speed = DecimalRangeField('Speed', render_kw={'class': 'speed'}, validators=[DataRequired()])
-    has_swtch = SelectField('Pi can swtch fan power', choices=[(False, ''), (True, 'Yes'), (False, 'No')], validate_choice=False)
+    id = IntegerField('Serial', validators=[DataRequired()])
+    has_swtch = SelectField('Pi can swtch fan power', choices=[(False, ''), (True, 'Yes'), (False, 'No')], validate_choice=False, coerce=bool)
     swtch_pin = IntegerField('GPIO PIN used for switch', validators=[DataRequired()])
-    has_pwm = SelectField('Pi can control speed via PWM', choices=[(False, ''), (True, 'Yes'), (False, 'No')], validate_choice=False)
+    has_pwm = SelectField('Pi can control speed via PWM', choices=[(False, ''), (True, 'Yes'), (False, 'No')], validate_choice=False, coerce=bool)
     pwm_pin = IntegerField('GPIO PIN used for PWM', validators=[DataRequired()])
-    edit = SubmitField('Edit Fan', render_kw={'class': 'btn btn-outline-warning'})
-    delete = SubmitField('Delete Fan', render_kw={'class': 'btn btn-outline-danger'})
     submit = SubmitField('Save Fan')
 
-# class FanForm(FlaskForm):
-#     name = HiddenField('Name')
-#     id = HiddenField('id')
-#     swtch = BooleanField('Switch', render_kw={'class': 'swtch'})
-#     speed = DecimalRangeField('Speed', render_kw={'class': 'speed'}, validators=[DataRequired()])
-#     has_swtch = HiddenField('has_swtch')
-#     swtch_pin = HiddenField('swtch_pin')
-#     has_pwm = HiddenField('has_pwm')
-#     pwm_pin = HiddenField('pwm_pin')
-#     edit = SubmitField('Edit Fan', render_kw={'class': 'btn btn-outline-warning'})
-#     delete = SubmitField('Delete Fan', render_kw={'class': 'btn btn-outline-danger'})
+class FanForm(FlaskForm):
+    name = HiddenField('Name')
+    swtch = BooleanField('Switch', render_kw={'class': 'swtch'})
+    speed = DecimalRangeField('Speed', render_kw={'class': 'speed'}, validators=[DataRequired()])
+    edit = SubmitField('Edit Fan', render_kw={'class': 'btn btn-outline-warning'})
+    delete = SubmitField('Delete Fan', render_kw={'class': 'btn btn-outline-danger'})

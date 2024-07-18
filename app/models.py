@@ -8,16 +8,11 @@ class Sensor(db.Model):
     name: so.Mapped[str] = so.mapped_column(sa.String(64), unique=True)
     type: so.Mapped[str] = so.mapped_column(sa.String(64)) # future: other than temperature sensor
 
-    def __repr__(self):
-        return '<Sensor {} type: {}>'.format(self.name, self.type)
-    
-    def take_reading(self):
-        pass
-
 class TempSensor(Sensor):
     model: so.Mapped[str] = so.mapped_column(sa.String(64)) # exact model
     
-    readings: so.WriteOnlyMapped['TempReading'] = so.relationship(back_populates='sensor')
+    auto: so.WriteOnlyMapped['Automation'] = so.relationship(back_populates='temp_sensor')
+    readings: so.WriteOnlyMapped['TempReading'] = so.relationship(back_populates='temp_sensor')
 
     def __repr__(self):
         return f'<Temp Sensor {self.name} type: {self.type} model: {self.model}>'
@@ -27,16 +22,14 @@ class Reading(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
 
-    def __repr__(self):
-        return f'<Time: {self.timestamp}>'.format(self.timestamp, self.temp)
-
 class TempReading(Reading):
-    temp: so.Mapped[int] = so.mapped_column() # the temperature in degrees Fahrenheit
-    sensor_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Sensor.id), index=True)
+    temp: so.Mapped[float] = so.mapped_column() # the temperature in degrees Fahrenheit
 
-    sensor: so.Mapped[TempSensor] = so.relationship(back_populates='readings')
+    temp_sensor_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(TempSensor.id), index=True)
+    temp_sensor: so.Mapped[TempSensor] = so.relationship(back_populates='readings')
+
     def __repr__(self):
-        return f'<Sensor: {self.sensor.name} Time: {self.timestamp} Temp {self.temp}>'
+        return f'<Temp Reading: {self.sensor.name} Time: {self.timestamp} Temp {self.temp}>'
 
 class Fan(db.Model):
     id: so.Mapped[str] = so.mapped_column(sa.String(36), primary_key=True)
@@ -50,26 +43,23 @@ class Fan(db.Model):
     speed: so.Mapped[int] = so.mapped_column()
 # mapped var pointing to table of past speed changes
     speed_changes: so.WriteOnlyMapped['SpeedChange'] = so.relationship(back_populates='fan', passive_deletes=True)
+    auto: so.WriteOnlyMapped['Automation'] = so.relationship(back_populates='fan', passive_deletes=True)
     
     def __repr__(self):
         return '<Fan {} - on? {} - last speed {}>'.format(self.name, self.is_on, self.speed)
     
     def __init__(self, form=None):
         super().__init__()
-        if form == None:
-          return self
-        else:
-          return self.copy_from_form(form)
+        if form: self.copy_from_form(form)
+        self.swtch = False
+        self.speed = 0
+        return self
 
     def copy_from_form(self, form):
-        self.name = form.name.data
-        self.id = form.id.data 
-        self.has_swtch = form.has_swtch.data == 'True'
-        self.swtch_pin = form.swtch_pin.data 
-        self.has_pwm = form.has_pwm.data == 'True'
-        self.pwm_pin = form.pwm_pin.data
-        self.swtch = form.swtch.data == 'True'
-        self.speed = round(float(form.speed.data), 1)
+        for key, value in form.data.items():
+          if hasattr(self, key):
+            setattr(self, key, value)
+        self.speed = round(self.speed) # workaround because DecimalRangeField can't coerce to int
         return self
 
 class SpeedChange(db.Model):
@@ -91,7 +81,11 @@ class Automation(db.Model):
     temp_min: so.Mapped[float] = so.mapped_column()
     enabled: so.Mapped[bool] = so.mapped_column()
     sensor_name: so.Mapped[str] = so.mapped_column(sa.String(64))
-    fan_name: so.Mapped[str] = so.mapped_column(sa.String(64))
+    fan_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Fan.id), index=True)
+    temp_sensor_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(TempSensor.id), index=True)
+    
+    fan: so.Mapped[Fan] = so.relationship(back_populates='auto')
+    temp_sensor: so.Mapped[TempSensor] = so.relationship(back_populates='auto')
 
     def __init__(self, form=None):
         super().__init__()

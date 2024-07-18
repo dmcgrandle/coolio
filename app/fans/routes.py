@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for, request
 import sqlalchemy as sa
 from app import db
 from . import bp
-from .forms import FanForm
+from .forms import FanForm, EditFanForm
 from app.models import Fan
 
 @bp.route('/', methods=['GET', 'POST'])
@@ -26,7 +26,7 @@ def fans_index():
 
 @bp.route('/new_fan', methods=['GET', 'POST'])
 def new_fan():
-    form = FanForm(disp_title='New Fan')
+    form = EditFanForm(disp_title='New Fan')
     if form.validate_on_submit():
       fan = Fan(form)
       db.session.add(fan)
@@ -42,10 +42,10 @@ def edit_fan():
        flash('Fan {} not found'.format(request.args.get('name')))
        return redirect(url_for('fans.fans_index'))
        #todo: handle errors better
-    form = FanForm(obj=fan, disp_title='Edit Fan')
+    form = EditFanForm(obj=fan, disp_title='Edit Fan')
     if form.validate_on_submit():
       fan.copy_from_form(form)
       db.session.commit()
       flash('Edited fan {}'.format(fan.name))
-      return redirect(url_for('fans.fans_index'))
+      return redirect(url_for('.fans_index'))
     return render_template('edit_fan.html', title='Edit Fan', form=form)

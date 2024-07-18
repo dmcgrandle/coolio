@@ -10,7 +10,7 @@
                     {{ form.hidden_tag() }}
                     <h2>{{ form.name.data }}: <span class="invisible">{{ form.name(size=1) }}</span></h2>
                     <p>
-                        {{ form.speed.label }}: <span class="speed_display_val">{{ form.speed.data | round }}%</span><br>
+                        {{ form.speed.label }}: <span class="speed_display_val">{{ form.speed.data | round(1) }}%</span><br>
                         {{ form.speed(min=20) }}<br>
                         {% for error in form.speed.errors %}
                         <span style="color: red;">[{{ error }}]</span>

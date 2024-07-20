@@ -3,12 +3,15 @@ from wtforms import DecimalRangeField, DecimalField, BooleanField, StringField, 
 from wtforms.validators import DataRequired
 from decimal import ROUND_HALF_UP
 
-def coerce_bool(value):
-    test = value == 'Yes' or value == True
-    return test
+class FanForm(FlaskForm):
+    name = HiddenField('Name')
+    swtch = BooleanField('Turn fan on', render_kw={'class': 'swtch'})
+    speed = DecimalRangeField('Speed', render_kw={'class': 'speed'}, validators=[DataRequired()])
+    edit = SubmitField('Edit fan', render_kw={'class': 'btn btn-outline-warning'})
+    delete = SubmitField('Delete fan', render_kw={'class': 'btn btn-outline-danger'})
 
 class EditFanForm(FlaskForm):
-    disp_title = StringField('Display Title')
+    disp_title = StringField('Display title')
     name = StringField('Name', validators=[DataRequired()])
     id = IntegerField('Serial', validators=[DataRequired()])
     has_swtch = SelectField('Pi can swtch fan power', 
@@ -24,9 +27,3 @@ class EditFanForm(FlaskForm):
     cancel = SubmitField('Cancel', render_kw={'class': 'btn btn-outline-secondary'})
     save = SubmitField('Save Fan', render_kw={'class': 'btn btn-outline-primary'})
 
-class FanForm(FlaskForm):
-    name = HiddenField('Name')
-    swtch = BooleanField('Switch', render_kw={'class': 'swtch'})
-    speed = DecimalRangeField('Speed', render_kw={'class': 'speed'}, validators=[DataRequired()])
-    edit = SubmitField('Edit Fan', render_kw={'class': 'btn btn-outline-warning'})
-    delete = SubmitField('Delete Fan', render_kw={'class': 'btn btn-outline-danger'})

@@ -26,7 +26,7 @@ class TempSensor(Sensor):
     def __init__(self, form=None):
         super().__init__()
         if form: self.copy_from_form(form)
-        return self
+        #return self
 
     def copy_from_form(self, form):
         self = copy_to_obj_from_form(self, form)
@@ -68,7 +68,7 @@ class Fan(db.Model):
         if form: self.copy_from_form(form)
         self.swtch = False
         self.speed = 0
-        return self
+        #return self
 
     def copy_from_form(self, form):
         self = copy_to_obj_from_form(self, form)
@@ -94,8 +94,7 @@ class Automation(db.Model):
     temp_max: so.Mapped[float] = so.mapped_column()
     temp_min: so.Mapped[float] = so.mapped_column()
     enabled: so.Mapped[bool] = so.mapped_column()
-    sensor_name: so.Mapped[str] = so.mapped_column(sa.String(64))
-    fan_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Fan.id), index=True)
+    fan_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Fan.id), index=True)
     temp_sensor_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(TempSensor.id), index=True)
     
     fan: so.Mapped[Fan] = so.relationship(back_populates='auto')
@@ -105,16 +104,12 @@ class Automation(db.Model):
         super().__init__()
         if form:
           self.copy_from_form(form)
-        return self
+        #return self
     
     def copy_from_form(self, form):
-        self.name = form.name.data
-        self.sensor_name = form.sensor_name.data
-        self.fan_name = form.fan_name.data
-        self.temp_max = form.temp_max.data
-        self.temp_min = form.temp_min.data
-        if form.enabled.data == None:
-          self.enabled = False
-        else:
-          self.enabled = form.enabled.data
-        return self
+        self = copy_to_obj_from_form(self, form)
+        #if not self.temp_sensor:
+        self.temp_sensor = TempSensor.query.filter_by(name=form.temp_sensor_name.data).first()
+        #if not self.fan:
+        self.fan = Fan.query.filter_by(name=form.fan_name.data).first()
+        #return self

@@ -57,6 +57,9 @@ def edit_temp_sensor():
       prefixes = ('New', 'Created New')
     else:
       temp_sensor = TempSensor.query.filter_by(name=name).first()
+      if not temp_sensor:
+        flash('Error: Temperature Sensor {name} was not found')
+        return redirect(url_for('.sensors_index'))
       prefixes = ('Edit', 'Edited')
     form = EditTempSensorForm(request.form)
     if form.validate_on_submit():

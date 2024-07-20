@@ -43,7 +43,8 @@ def edit_fan():
        #todo: handle errors better
     form = EditFanForm(obj=fan, disp_title='Edit Fan')
     if form.validate_on_submit():
-      if form.cancel.data: return redirect(url_for('.fans_index'))
+      if form.cancel.data: 
+         return redirect(url_for('.fans_index'))
       fan.copy_from_form(form)
       db.session.commit()
       flash('Edited fan {}'.format(fan.name))

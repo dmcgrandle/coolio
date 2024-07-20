@@ -15,10 +15,17 @@
                           Serial: <span>{{ sensor.id }}</span><br>
                           Model: <span>{{ sensor.model }}</span><br>
                         </p>
+                        {% if reading %}
                         <p>
                           Latest Reading: <span>{{ reading.temp | round(1) }} &#176;F</span><br>
                           time: {{ moment(reading.timestamp).format('LLL') }}
                         </p>
+                        {% else %}
+                        <p>
+                          No readings yet<br>
+                          <br>
+                        </p>
+                        {% endif %}
                     {% endif %}
                     <p>{{ form.edit }} <span class="ms-1">{{ form.delete }}</span></p>
                 </form>

@@ -3,13 +3,13 @@
 {% block content %}
     <h1>Automations</h1>
     <div class="container">
-        <div class="row">
+        <div class="row row-cols-auto">
             {% for form in forms %}
             <div class="col m-1 shadow-5-strong border border-white rounded">
                 <form class="m-2" name="{{ form.name.data }}" action="" method="post">
                     {{ form.hidden_tag() }}
-                    <h2 class="m-1">{{ form.name.data }}:</h2>
-                    <h5>Temp Sensor: <span>{{ form.sensor_name.data }}</span></h5>
+                    <h2>{{ form.name.data }}:</h2>
+                    <h5>Temp Sensor: <span>{{ form.temp_sensor_name.data }}</span></h5>
                     <h5>Fan: <span>{{ form.fan_name.data }}</span></h5>
                     <h5>Automation details:</h5>
                     <p>
@@ -24,6 +24,6 @@
         </div>
     </div>
 
-    <a class="mt-3 btn btn-primary" href="{{ url_for('main.newautomation') }}" role="button">Add an automation</a>
+    <a class="mt-3 btn btn-primary" href="{{ url_for('main.edit_automation')+'?name=_new_' }}" role="button">Add an automation</a>
 
 {% endblock %}

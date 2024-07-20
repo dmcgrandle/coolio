@@ -37,19 +37,6 @@ def sensors_index():
       data.append((form, type_sensor, reading))
     return render_template('sensors_index.html', title='Sensors', data=data)
 
-@bp.route('/new_sensor', methods=['GET', 'POST'])
-def new_sensor():
-    form = NewSensorForm(request.form)
-    if form.validate_on_submit():
-      if form.cancel.data == True:
-        return redirect(url_for('.sensors_index'))
-      elif form.next.data == True:
-        if form.type.data == 'Temp Sensor':
-           return redirect(url_for('.edit_temp_sensor')+'?name=_new_')
-        else:
-           flash('Must choose a sensor type, or cancel.')
-    return render_template('new_sensor.html', title='New Sensor', form=form)
-   
 @bp.route('/edit_temp_sensor', methods=['GET', 'POST'])
 def edit_temp_sensor():
     if (name := request.args.get('name')) == '_new_':

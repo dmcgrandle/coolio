@@ -11,7 +11,7 @@ run = 0
 
 temps = [ 69, 70, 71, 72, 75, 75, 85, 90, 95, 90, 85, 75, 70, 65, 60, 70, 80, 90 ]
 
-@scheduler.task('interval', id='temp_reading', seconds=10, max_instances=1)
+#@scheduler.task('interval', id='temp_reading', seconds=10, max_instances=1)
 def interval_temp_reading():
   global run
   with db.app.app_context():

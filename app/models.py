@@ -1,7 +1,9 @@
 from datetime import datetime, timezone
+from flask import current_app
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from app import db
+import RPi.GPIO as GPIO
 
 def copy_to_obj_from_form(obj, form):
     for key, value in form.data.items():
@@ -52,7 +54,7 @@ class Fan(db.Model):
     has_swtch: so.Mapped[bool] = so.mapped_column()
     swtch_pin: so.Mapped[int] = so.mapped_column()
     has_pwm: so.Mapped[bool] = so.mapped_column()
-    pwm_pin: so.Mapped[int] = so.mapped_column()
+    pwm_channel: so.Mapped[int] = so.mapped_column()
 # current_state variables:
     swtch: so.Mapped[bool] = so.mapped_column()
     speed: so.Mapped[int] = so.mapped_column()
@@ -101,7 +103,13 @@ class Automation(db.Model):
     temp_sensor: so.Mapped[TempSensor] = so.relationship(back_populates='auto')
 
     def __init__(self, form=None):
+        from app.sensors import scheduled_tasks
+        from app.main.environment_state import EnvStateMachine
+
         super().__init__()
+        self.job_id = f'auto-{self.id}'
+        self.temp_reading = scheduled_tasks.interval_temp_reading
+        self.sm = EnvStateMachine(self)
         if form:
           self.copy_from_form(form)
         #return self
@@ -113,3 +121,26 @@ class Automation(db.Model):
         #if not self.fan:
         self.fan = Fan.query.filter_by(name=form.fan_name.data).first()
         #return self
+
+    def start_automation(self):
+        # start regular temp readings
+        current_app.scheduler.add_job(
+          self.temp_reading(self.temp_sensor), 'interval', minutes=1, id=self.job_id)
+        # start the state machine
+        self.sm.activate_initial_state()
+
+    def stop_automation(self):
+        # start regular temp readings
+        current_app.scheduler.remove_job(id=self.job_id)
+        # start the state machine
+        self.sm.send('end', end_signal=True)
+        #if os.environ.get('WERKZEUG_RUN_MAIN') == "true":
+        # with app.app_context():
+        #   print('load scheduler')
+        #   from app.sensors import scheduled_tasks
+        #   scheduler.start()
+
+        #  from app.main.environment_state import EnvStateMachine
+        #  app.sm = EnvStateMachine()
+        #  app.sm.activate_initial_state()
+

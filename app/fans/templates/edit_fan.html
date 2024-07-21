@@ -20,18 +20,12 @@
           {% endfor %}
         </p>
         <p>{{ form.has_pwm.label }}:  <span class="ms-2">{{ form.has_pwm }}</span><br></p>
+        <p>{{ form.pwm_channel.label }} <span class="ms-2">{{ form.pwm_channel }}</span><br></p>
         <p>{{ form.has_swtch.label }}:  <span class="ms-2">{{ form.has_swtch }}</span><br></p>
         <p>
           {{ form.swtch_pin.label }}<br>
           {{ form.swtch_pin(size=2) }}
           {% for error in form.swtch_pin.errors %}
-          <span style="color: red;">[{{ error }}]</span>
-          {% endfor %}
-        </p>
-        <p>
-          {{ form.pwm_pin.label }}<br>
-          {{ form.pwm_pin(size=2) }}
-          {% for error in form.pwm_pin.errors %}
           <span style="color: red;">[{{ error }}]</span>
           {% endfor %}
         </p>

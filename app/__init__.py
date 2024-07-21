@@ -8,6 +8,8 @@ from flask_migrate import Migrate
 from flask_moment import Moment
 from flask_apscheduler import APScheduler
 from config import Config
+from rpi_hardware_pwm import HardwarePWM
+import RPi.GPIO as GPIO
 
 moment = Moment()
 db = SQLAlchemy()
@@ -25,10 +27,10 @@ def create_app(config_class=Config):
   scheduler.init_app(app)
 
   #if os.environ.get('WERKZEUG_RUN_MAIN') == "true":
-  # with app.app_context():
-  #   print('load scheduler')
-  #   from app.sensors import scheduled_tasks
-  #   scheduler.start()
+  with app.app_context():
+    print('load scheduler')
+    from app.sensors import scheduled_tasks
+    scheduler.start()
 
   from app.errors import bp as errors_bp
   app.register_blueprint(errors_bp)
@@ -41,6 +43,11 @@ def create_app(config_class=Config):
 
   from app.main import bp as main_bp
   app.register_blueprint(main_bp)
+
+  app.pwm = [HardwarePWM(pwm_channel=0, hz=60, chip=0), HardwarePWM(pwm_channel=1, hz=60, chip=0)]
+  app.pwm[0].start(0)
+
+  GPIO.setmode(GPIO.BCM)
 
 #  from app.main.environment_state import EnvStateMachine
 #  app.sm = EnvStateMachine()

@@ -24,9 +24,12 @@ def automations():
         elif form.delete.data == True:
           db.session.delete(auto)
           flash(f'DELETED Automation: {form.name.data}')
+        elif form.enabled.data:
+          auto.enabled = True
+          auto.start_automation()
         else:
-          auto.enabled = form.enabled.data
-          #todo: launch the automation
+          auto.enabled = False
+          auto.stop_automation()
         db.session.commit()
     forms = [AutomationForm(formdata=None, obj=auto) for auto in Automation.query.all()]
     return render_template('automations.html', title='Automations', forms=forms)

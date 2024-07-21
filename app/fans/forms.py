@@ -23,7 +23,10 @@ class EditFanForm(FlaskForm):
                           choices=['', 'Yes', 'No'], 
                           validate_choice=False,
                           coerce=lambda x: x == 'Yes' or x == True)
-    pwm_pin = IntegerField('GPIO PIN used for PWM', validators=[DataRequired()])
+    pwm_channel = SelectField('PWM channel for this fan', 
+                            choices=['0', '1'],
+                            validate_choice=False,
+                            coerce=int)
     cancel = SubmitField('Cancel', render_kw={'class': 'btn btn-outline-secondary'})
     save = SubmitField('Save Fan', render_kw={'class': 'btn btn-outline-primary'})
 

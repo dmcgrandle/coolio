@@ -20,12 +20,14 @@ def fans_index():
           db.session.delete(fan)
           flash(f'DELETED Fan: {form.name.data}')
         else:
-          if not fan.swtch and form.swtch: #fan is being turned on
+          if not fan.swtch and form.swtch.data: #fan is being turned on
+            GPIO.setup(fan.swtch_pin, GPIO.OUT)
             GPIO.output(fan.swtch_pin, GPIO.HIGH)
-          elif fan.swtch and not form.swtch: #fan is being turned off
+          elif fan.swtch and not form.swtch.data: #fan is being turned off
+            GPIO.setup(fan.swtch_pin, GPIO.OUT)
             GPIO.output(fan.swtch_pin, GPIO.LOW)
           elif fan.speed != form.speed: #change to fan.speed needed
-            current_app.pwm[fan.pwm_channel].change_duty_cycle(form.speed)
+            current_app.pwm[fan.pwm_channel].change_duty_cycle(round(form.speed.data))
           else:
             flash(f'Unknown reason for POST: {form.name.data}')
             current_app.logger.warning('Fans Index: unknown reason for POST')

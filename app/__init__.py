@@ -44,7 +44,7 @@ def create_app(config_class=Config):
   from app.main import bp as main_bp
   app.register_blueprint(main_bp)
 
-  app.pwm = [HardwarePWM(pwm_channel=0, hz=60, chip=0), HardwarePWM(pwm_channel=1, hz=60, chip=0)]
+  app.pwm = [HardwarePWM(pwm_channel=0, hz=25000, chip=0), HardwarePWM(pwm_channel=1, hz=25000, chip=0)]
   app.pwm[0].start(0)
 
   GPIO.setmode(GPIO.BCM)

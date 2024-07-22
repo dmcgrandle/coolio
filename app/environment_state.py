@@ -1,7 +1,9 @@
+import math
 from statemachine import StateMachine, State
 from statemachine.states import States
 from enum import Flag, auto
 from flask import current_app
+from app import db
 import RPi.GPIO as GPIO
 
 class EnvironmentState(Flag):
@@ -42,15 +44,19 @@ class EnvStateMachine(StateMachine):
   def __init__(self, auto):
     super().__init__()
     self.auto = auto
-    self.fan_increment = round(100/(self.auto.temp_max - self.auto.temp_min))
+    GPIO.setup(self.auto.fan.swtch_pin, GPIO.OUT)
 
   def change_fan_speed(self, new_speed):
-    self.auto.fan.speed = new_speed
-    current_app.pwm[self.auto.fan.pwm_channel].change_duty_cycle(new_speed)
+    with db.app.app_context():
+      self.auto.fan.speed = new_speed
+      current_app.pwm[self.auto.fan.pwm_channel].change_duty_cycle(new_speed)
+      db.session.commit()
   
   def turn_fan_on_or_off(self, turn_fan_on: bool):
-    self.auto.fan.swtch = turn_fan_on
-    GPIO.output(self.auto.fan.swtch_pin, turn_fan_on)
+    with db.app.app_context():
+      self.auto.fan.swtch = turn_fan_on
+      GPIO.output(self.auto.fan.swtch_pin, turn_fan_on)
+      db.session.commit()
 
   async def between_min_and_max(self, temp: float):
     return temp >= self.auto.temp_min and temp <= self.auto.temp_max
@@ -75,7 +81,8 @@ class EnvStateMachine(StateMachine):
 
   async def on_enter_WARM(self, temp: float):
     print('entering WARM state')
-    self.change_fan_speed((temp - self.auto.temp_min)*self.fan_increment)
+    fan_increment = math.floor(100/(self.auto.temp_max - self.auto.temp_min))
+    self.change_fan_speed((temp - self.auto.temp_min)*fan_increment)
     self.turn_fan_on_or_off(True)
 
   async def on_enter_HOT(self):

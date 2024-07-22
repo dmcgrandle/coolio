@@ -19,7 +19,7 @@ class AutomationForm(FlaskForm):
     fan_name = SelectField('Choose a fan', validate_choice=False)
     temp_max = FloatField('Maximum temperature')
     temp_min = FloatField('Minimum temperature')
-    enabled = BooleanField('Enabled')
+    enabled = BooleanField('Enabled', render_kw={'class': 'enable'})
     edit = SubmitField('Edit automation', render_kw={'class': 'btn btn-outline-warning'})
     delete = SubmitField('Delete automation', render_kw={'class': 'btn btn-outline-danger'})
     cancel = SubmitField('Cancel', render_kw={'class': 'btn btn-outline-secondary'})

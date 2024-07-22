@@ -1,9 +1,12 @@
 from datetime import datetime, timezone
-from flask import current_app
+import os, glob, sys, time
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from app import db
+from typing import ClassVar
+from flask import current_app
+from app import db, scheduler
 import RPi.GPIO as GPIO
+from .environment_state import EnvStateMachine
 
 def copy_to_obj_from_form(obj, form):
     for key, value in form.data.items():
@@ -90,6 +93,10 @@ class SpeedChange(db.Model):
     def __repr__(self):
         return '<Speed {}'.format(self.speed)+', Change Reason {}'.format(self.change_reason)+', fan {}>'.format(self.fan)
 
+run = 0
+
+temps = [ 69, 70, 71, 72, 75, 75, 85, 90, 95, 90, 85, 75, 70, 65, 60, 70, 80, 90 ]
+
 class Automation(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(64), unique=True)
@@ -100,20 +107,16 @@ class Automation(db.Model):
     temp_sensor_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(TempSensor.id), index=True)
     
     fan: so.Mapped[Fan] = so.relationship(back_populates='auto')
-    temp_sensor: so.Mapped[TempSensor] = so.relationship(back_populates='auto')
+    temp_sensor: so.Mapped[TempSensor] = so.relationship(back_populates='auto', lazy='subquery')
+
+    sm: ClassVar[EnvStateMachine] = None
 
     def __init__(self, form=None):
-        from app.sensors import scheduled_tasks
-        from app.main.environment_state import EnvStateMachine
-
         super().__init__()
-        self.job_id = f'auto-{self.id}'
-        self.temp_reading = scheduled_tasks.interval_temp_reading
-        self.sm = EnvStateMachine(self)
         if form:
           self.copy_from_form(form)
         #return self
-    
+
     def copy_from_form(self, form):
         self = copy_to_obj_from_form(self, form)
         #if not self.temp_sensor:
@@ -123,17 +126,20 @@ class Automation(db.Model):
         #return self
 
     def start_automation(self):
+        from .sensors.scheduled_tasks import interval_temp_reading
+        # setup the GPIO pins
+        GPIO.setup(self.fan.swtch_pin, GPIO.OUT)
+        # activate the state machine
+        sm = EnvStateMachine(self)
+        sm.activate_initial_state()
         # start regular temp readings
-        current_app.scheduler.add_job(
-          self.temp_reading(self.temp_sensor), 'interval', minutes=1, id=self.job_id)
-        # start the state machine
-        self.sm.activate_initial_state()
+        scheduler.add_job(func=interval_temp_reading, args=[sm, self.temp_sensor, self.id], trigger='interval', seconds=10, id=f'auto-{self.id}')
 
     def stop_automation(self):
         # start regular temp readings
-        current_app.scheduler.remove_job(id=self.job_id)
-        # start the state machine
-        self.sm.send('end', end_signal=True)
+        scheduler.remove_job(id=f'auto-{self.id}')
+        GPIO.cleanup(self.fan.swtch_pin)
+        GPIO.setup(self.fan.swtch_pin, GPIO.IN)
         #if os.environ.get('WERKZEUG_RUN_MAIN') == "true":
         # with app.app_context():
         #   print('load scheduler')

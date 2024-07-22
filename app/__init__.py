@@ -44,12 +44,7 @@ def create_app(config_class=Config):
   from app.main import bp as main_bp
   app.register_blueprint(main_bp)
 
-  app.pwm = [HardwarePWM(pwm_channel=0, hz=25000, chip=0), HardwarePWM(pwm_channel=1, hz=25000, chip=0)]
-  app.pwm[0].start(0)
-
-  GPIO.setmode(GPIO.BCM)
-
-#  from app.main.environment_state import EnvStateMachine
+#  from app.environment_state import EnvStateMachine
 #  app.sm = EnvStateMachine()
 #  app.sm.activate_initial_state()
 
@@ -63,6 +58,20 @@ def create_app(config_class=Config):
 
   app.logger.setLevel(logging.INFO)
   app.logger.info('Coolio startup')
+
+  # Setup PWM and GPIO ports
+  app.pwm = [HardwarePWM(pwm_channel=0, hz=25000, chip=0), HardwarePWM(pwm_channel=1, hz=25000, chip=0)]
+  app.pwm[0].start(0)
+  app.pwm[1].start(0)
+
+  GPIO.setmode(GPIO.BCM)
+
+  # Restart automations if they were going when last shut down
+  with app.app_context():
+    from .models import Automation
+    for auto in Automation.query.all():
+      if auto.enabled:
+        auto.start_automation()
 
   return app
 

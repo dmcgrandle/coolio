@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>New Sensor</h1>
-    <h5>First, choose the sensor type:</h5>
-        <form class="m-2" name="form" action="" method="post">
-            {{ form.hidden_tag() }}
-            <p>{{ form.type.label }}:  <span class="ms-2">{{ form.type }}</span><br></p>
-            <p>{{ form.cancel }} <span class="ms-1">{{ form.next }}</span></p>
-        </form>
- 
+<h1>New Sensor</h1>
+<h5>First, choose the sensor type:</h5>
+<form class="m-2" name="form" action="" method="post">
+  {{ form.hidden_tag() }}
+  <p>{{ form.type.label }}: <span class="ms-2">{{ form.type }}</span><br></p>
+  <p>{{ form.cancel }} <span class="ms-1">{{ form.next }}</span></p>
+</form>
+
 {% endblock %}

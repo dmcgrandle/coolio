@@ -1,35 +1,35 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{{ form.disp_title.data }}</h1>
-    <div class="mx-1 shadow-5-strong border border-white rounded" style="max-width: 400px">
-      <form class="mx-auto ms-3" name="form" action="" method="post">
-        {{ form.hidden_tag() }}
-        <p>
-          {{ form.name.label }}<br>
-          {{ form.name(size=35) }}
-          {% for error in form.name.errors %}
-          <span style="color: red;">[{{ error }}]</span>
-          {% endfor %}
-        </p>
-        <p>
-          {{ form.temp_sensor_name.label }}:  <span class="ms-2">{{ form.temp_sensor_name }}</span><br>
-          {% for error in form.temp_sensor_name.errors %}
-          <span style="color: red;">[{{ error }}]</span>
-          {% endfor %}
-        </p>
-        <p>
-          {{ form.fan_name.label }}:  <span class="ms-2">{{ form.fan_name }}</span><br>
-          {% for error in form.fan_name.errors %}
-          <span style="color: red;">[{{ error }}]</span>
-          {% endfor %}
-        </p>
-        <p>{{ form.temp_max.label }}:  <span class="ms-2">{{ form.temp_max }}</span><br></p>
-        <p>{{ form.temp_min.label }}:  <span class="ms-2">{{ form.temp_min }}</span><br></p>
-        <p>
-        </p>
-        <p>{{ form.cancel }} <span class="ms-1">{{ form.save }}</span></p>
-    </form>
-    </div>
- 
+<h1>{{ form.disp_title.data }}</h1>
+<div class="mx-1 shadow-5-strong border border-white rounded" style="max-width: 400px">
+  <form class="mx-auto ms-3" name="form" action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>
+      {{ form.name.label }}<br>
+      {{ form.name(size=35) }}
+      {% for error in form.name.errors %}
+      <span style="color: red;">[{{ error }}]</span>
+      {% endfor %}
+    </p>
+    <p>
+      {{ form.temp_sensor_name.label }}: <span class="ms-2">{{ form.temp_sensor_name }}</span><br>
+      {% for error in form.temp_sensor_name.errors %}
+      <span style="color: red;">[{{ error }}]</span>
+      {% endfor %}
+    </p>
+    <p>
+      {{ form.fan_name.label }}: <span class="ms-2">{{ form.fan_name }}</span><br>
+      {% for error in form.fan_name.errors %}
+      <span style="color: red;">[{{ error }}]</span>
+      {% endfor %}
+    </p>
+    <p>{{ form.temp_max.label }}: <span class="ms-2">{{ form.temp_max }}</span><br></p>
+    <p>{{ form.temp_min.label }}: <span class="ms-2">{{ form.temp_min }}</span><br></p>
+    <p>
+    </p>
+    <p>{{ form.cancel }} <span class="ms-1">{{ form.save }}</span></p>
+  </form>
+</div>
+
 {% endblock %}

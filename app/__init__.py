@@ -17,62 +17,62 @@ migrate = Migrate()
 scheduler = APScheduler()
 
 def create_app(config_class=Config):
-  print('in create_app')
-  app = Flask(__name__)
-  app.config.from_object(config_class)
-  db.app = app
-  db.init_app(app)
-  migrate.init_app(app, db)
-  moment.init_app(app)
-  scheduler.init_app(app)
+    print('in create_app')
+    app = Flask(__name__)
+    app.config.from_object(config_class)
+    db.app = app
+    db.init_app(app)
+    migrate.init_app(app, db)
+    moment.init_app(app)
+    scheduler.init_app(app)
 
-  #if os.environ.get('WERKZEUG_RUN_MAIN') == "true":
-  with app.app_context():
-    print('load scheduler')
-    from app.sensors import scheduled_tasks
-    scheduler.start()
+    #if os.environ.get('WERKZEUG_RUN_MAIN') == "true":
+    with app.app_context():
+        print('load scheduler')
+        from app.sensors import scheduled_tasks
+        scheduler.start()
 
-  from app.errors import bp as errors_bp
-  app.register_blueprint(errors_bp)
+    from app.errors import bp as errors_bp
+    app.register_blueprint(errors_bp)
 
-  from app.sensors import bp as sensors_bp
-  app.register_blueprint(sensors_bp, url_prefix='/sensors')
+    from app.sensors import bp as sensors_bp
+    app.register_blueprint(sensors_bp, url_prefix='/sensors')
 
-  from app.fans import bp as fans_bp
-  app.register_blueprint(fans_bp, url_prefix='/fans')
+    from app.fans import bp as fans_bp
+    app.register_blueprint(fans_bp, url_prefix='/fans')
 
-  from app.main import bp as main_bp
-  app.register_blueprint(main_bp)
+    from app.main import bp as main_bp
+    app.register_blueprint(main_bp)
 
-#  from app.environment_state import EnvStateMachine
-#  app.sm = EnvStateMachine()
-#  app.sm.activate_initial_state()
+  #  from app.environment_state import EnvStateMachine
+  #  app.sm = EnvStateMachine()
+  #  app.sm.activate_initial_state()
 
-  # if not app.debug and not app.testing:
-  if not os.path.exists('logs'):
-    os.mkdir('logs')
-  file_handler = RotatingFileHandler('logs/coolio.log', maxBytes=10240, backupCount=10)
-  file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
-  file_handler.setLevel(logging.DEBUG)
-  app.logger.addHandler(file_handler)
+    # if not app.debug and not app.testing:
+    if not os.path.exists('logs'):
+       os.mkdir('logs')
+    file_handler = RotatingFileHandler('logs/coolio.log', maxBytes=10240, backupCount=10)
+    file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
+    file_handler.setLevel(logging.DEBUG)
+    app.logger.addHandler(file_handler)
 
-  app.logger.setLevel(logging.INFO)
-  app.logger.info('Coolio startup')
+    app.logger.setLevel(logging.INFO)
+    app.logger.info('Coolio startup')
 
-  # Setup PWM and GPIO ports
-  app.pwm = [HardwarePWM(pwm_channel=0, hz=25000, chip=0), HardwarePWM(pwm_channel=1, hz=25000, chip=0)]
-  app.pwm[0].start(0)
-  app.pwm[1].start(0)
+    # Setup PWM and GPIO ports
+    app.pwm = [HardwarePWM(pwm_channel=0, hz=25000, chip=0), HardwarePWM(pwm_channel=1, hz=25000, chip=0)]
+    app.pwm[0].start(0)
+    app.pwm[1].start(0)
 
-  GPIO.setmode(GPIO.BCM)
+    GPIO.setmode(GPIO.BCM)
 
-  # Restart automations if they were going when last shut down
-  with app.app_context():
-    from .models import Automation
-    for auto in Automation.query.all():
-      if auto.enabled:
-        auto.start_automation()
+    # Restart automations if they were going when last shut down
+    with app.app_context():
+        from .models import Automation
+        for auto in Automation.query.all():
+            if auto.enabled:
+                auto.start_automation()
 
-  return app
+    return app
 
 # from app import routes, models

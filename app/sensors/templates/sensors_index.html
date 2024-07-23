@@ -1,39 +1,39 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Sensors</h1>
-    <div class="container">
-        <div class="row row-cols-auto">
-            {% for form, sensor, reading in data %}
-            <div class="col m-1 shadow-5-strong border border-white rounded">
-                <form class="m-2" name="{{ form.name.data }}" action="" method="post">
-                    {{ form.hidden_tag() }}
-                    <h2>{{ form.name.data }}: <span class="invisible">{{ form.name(size=1) }}</span></h2>
-                    {% if sensor.type == 'Temp Sensor' -%}
-                        <h5>Temperature Sensor</h5>
-                        <p>
-                          Serial: <span>{{ sensor.id }}</span><br>
-                          Model: <span>{{ sensor.model }}</span><br>
-                        </p>
-                        {% if reading %}
-                        <p>
-                          Latest Reading: <span>{{ reading.temp | round(1) }} &#176;F</span><br>
-                          time: {{ moment(reading.timestamp).format('LLL') }}
-                        </p>
-                        {% else %}
-                        <p>
-                          No readings yet<br>
-                          <br>
-                        </p>
-                        {% endif %}
-                    {% endif %}
-                    <p>{{ form.edit }} <span class="ms-1">{{ form.delete }}</span></p>
-                </form>
-            </div>
-            {% endfor %}
-        </div>
+<h1>Sensors</h1>
+<div class="container">
+  <div class="row row-cols-auto">
+    {% for form, sensor, reading in data %}
+    <div class="col m-1 shadow-5-strong border border-white rounded">
+      <form class="m-2" name="{{ form.name.data }}" action="" method="post">
+        {{ form.hidden_tag() }}
+        <h2>{{ form.name.data }}: <span class="invisible">{{ form.name(size=1) }}</span></h2>
+        {% if sensor.type == 'Temp Sensor' -%}
+        <h5>Temperature Sensor</h5>
+        <p>
+          Serial: <span>{{ sensor.id }}</span><br>
+          Model: <span>{{ sensor.model }}</span><br>
+        </p>
+        {% if reading %}
+        <p>
+          Latest Reading: <span>{{ reading.temp | round(1) }} &#176;F</span><br>
+          time: {{ moment(reading.timestamp).format('LLL') }}
+        </p>
+        {% else %}
+        <p>
+          No readings yet<br>
+          <br>
+        </p>
+        {% endif %}
+        {% endif %}
+        <p>{{ form.edit }} <span class="ms-1">{{ form.delete }}</span></p>
+      </form>
     </div>
+    {% endfor %}
+  </div>
+</div>
 
-    <a class="mt-3 btn btn-primary" href="{{ url_for('.new_sensor') }}" role="button">Add a new sensor</a>
+<a class="mt-3 btn btn-primary" href="{{ url_for('.new_sensor') }}" role="button">Add a new sensor</a>
 
 {% endblock %}

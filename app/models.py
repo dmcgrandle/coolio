@@ -118,12 +118,6 @@ class SpeedChange(db.Model):
         return f'<Speed {self.speed} Change Reason {self.change_reason}, fan {self.fan}>'
 
 
-run = 0
-
-temps = [69, 70, 71, 72, 75, 75, 85, 90,
-         95, 90, 85, 75, 70, 65, 60, 70, 80, 90]
-
-
 class Automation(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(64), unique=True)
@@ -157,7 +151,7 @@ class Automation(db.Model):
         # return self
 
     def start_automation(self):
-        from .sensors.scheduled_tasks import interval_temp_reading
+        from .sensors.sensor_tasks import interval_temp_reading
         # setup the GPIO pins
         GPIO.setup(self.fan.swtch_pin, GPIO.OUT)
         # activate the state machine
@@ -165,7 +159,7 @@ class Automation(db.Model):
         sm.activate_initial_state()
         # start regular temp readings
         scheduler.add_job(func=interval_temp_reading, args=[
-                          sm, self.temp_sensor, self.id], trigger='interval', seconds=10, id=f'auto-{self.id}')
+                          sm, self.temp_sensor, self.id], trigger='interval', minutes=5, id=f'auto-{self.id}')
 
     def stop_automation(self):
         # start regular temp readings

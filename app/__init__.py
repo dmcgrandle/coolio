@@ -29,7 +29,7 @@ def create_app(config_class=Config):
     #if os.environ.get('WERKZEUG_RUN_MAIN') == "true":
     with app.app_context():
         print('load scheduler')
-        from app.sensors import scheduled_tasks
+        from app.sensors import sensor_tasks
         scheduler.start()
 
     from app.errors import bp as errors_bp

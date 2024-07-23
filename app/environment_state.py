@@ -6,23 +6,21 @@ from flask import current_app
 from app import db
 import RPi.GPIO as GPIO
 
-
 class EnvironmentState(Flag):
     """
     The three states of the environment a fan will be cooling:
-    - Cool: fan is off, environment is cool
+    - Cool: fan is off, environment is cool, getting temp_readings
     - Warm: we are between two threshold temperature values 'min' and 'max'.
       In this state the fan speed will be varied up or down with temperature
       changes.
     - Hot: the max temperature has been exceeded.  Need to send an alert and
       turn fan to max.
-    - Off: This state machine is not active.
+    - Off: Final state: not active.
     """
     COOL = auto()
     WARM = auto()
     HOT = auto()
     OFF = auto()
-
 
 class EnvStateMachine(StateMachine):
     states = States.from_enum(

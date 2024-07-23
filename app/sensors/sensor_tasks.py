@@ -11,16 +11,16 @@ if os.system('sudo modprobe w1-gpio') or os.system('sudo modprobe w1-therm'):
         'No temp sensors detected!\nCoolio requires at least one temp sensor.  Exiting.')
 
 # for testing only
-run = [0, 0, 0]
-temps = [70, 90, 80, 75, 70, 65, 75, 80, 75, 65,
-         75, 65, 75, 65, 75, 65, 75, 65, 75, 65, 75]
+#run = [0, 0, 0]
+#temps = [70, 90, 80, 75, 70, 65, 75, 80, 75, 65,
+#         75, 65, 75, 65, 75, 65, 75, 65, 75, 65, 75]
 
 # @scheduler.task('interval', id='temp_reading', seconds=10, max_instances=1)
 
 
 def interval_temp_reading(sm, temp_sensor, run_i):
     """Function to be run in BackgroundScheduler - needs app.context() to write Readings"""
-    global run
+    #global run
     with db.app.app_context():
         try:
             # sensors = TempSensor.query.all()
@@ -45,11 +45,11 @@ def interval_temp_reading(sm, temp_sensor, run_i):
             current_app.logger.info(
                 f'Temp Sensor "{temp_sensor.name}" temperature taken {temperature}')
             print(reading)
-            # sm.send('sensor_updated', temp=temperature)
+            sm.send('sensor_updated', temp=temperature)
             # send ficticious temperatures to simulate
-            sm.send('sensor_updated', temp=temps[run[run_i]])
-            print(f'Sent {temps[run[run_i]]} for run #{run[run_i]}')
-            run[run_i] += 1
+            # sm.send('sensor_updated', temp=temps[run[run_i]])
+            # print(f'Sent {temps[run[run_i]]} for run #{run[run_i]}')
+            # run[run_i] += 1
         except FileNotFoundError as e:
             if e:
                 current_app.logger.error(

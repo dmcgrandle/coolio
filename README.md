@@ -4,3 +4,4 @@ Coolio is a Raspberry Pi Python fan and temperature controller using a Flask web
 
 The Python code is based on the excellent work done by Miguel Grinberg in his [Flask Mega-Tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world).
 
+- See the Wiki for details.

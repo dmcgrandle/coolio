@@ -1,5 +1,6 @@
 import os
 import sys
+from vcgencmd import Vcgencmd
 from flask import current_app
 from app import db
 # from app.sensors import bp
@@ -18,7 +19,7 @@ if os.system('sudo modprobe w1-gpio') or os.system('sudo modprobe w1-therm'):
 # @scheduler.task('interval', id='temp_reading', seconds=10, max_instances=1)
 
 
-def interval_temp_reading(sm, temp_sensor, run_i):
+def DS18B20_temp_reading(sm, temp_sensor, run_i):
     """Function to be run in BackgroundScheduler - needs app.context() to write Readings"""
     #global run
     with db.app.app_context():
@@ -60,3 +61,22 @@ def interval_temp_reading(sm, temp_sensor, run_i):
         finally:
             pass
             # auto.sm.send('end', end_signal=True)
+
+def Internal_Pi_temp_reading(sm, temp_sensor, run_i):
+    """Function to be run in BackgroundScheduler - needs app.context() to write Readings"""
+    #global run
+    with db.app.app_context():
+        try:
+            vcgm = Vcgencmd()
+            temperature_c = vcgm.measure_temp()
+            temperature = temperature_c * 9.0 / 5.0 + 32.0  # convert to fahrenheit
+            reading = TempReading(temp_sensor=temp_sensor, temp=temperature)
+            db.session.add(reading)
+            db.session.commit()
+            current_app.logger.info(
+                f'Temp Sensor "{temp_sensor.name}" temperature taken {temperature}')
+            print(reading)
+            sm.send('sensor_updated', temp=temperature)
+        except Exception:
+            current_app.logger.error(
+                'Unhandled exception', exc_info=sys.exc_info())

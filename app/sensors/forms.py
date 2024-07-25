@@ -10,7 +10,7 @@ class EditTempSensorForm(FlaskForm):
     type = SelectField('Sensor type', choices=[
                        '', 'Temp Sensor'], validate_choice=False)
     model = SelectField('Sensor model', choices=[
-                        '', 'DS18B20'], validate_choice=False)
+                        '', 'DS18B20', 'Internal Pi'], validate_choice=False)
     cancel = SubmitField('Cancel', render_kw={
                          'class': 'btn btn-outline-secondary'})
     save = SubmitField('Save', render_kw={'class': 'btn btn-outline-success'})

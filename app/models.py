@@ -96,7 +96,7 @@ class Fan(db.Model):
         # return self
 
     def copy_from_form(self, form):
-        self.copy_to_obj_from_form(self, form)
+        copy_to_obj_from_form(self, form)
         if self.speed:
             # workaround because DecimalRangeField can't coerce to int
             self.speed = round(self.speed)
@@ -142,7 +142,7 @@ class Automation(db.Model):
         # return self
 
     def copy_from_form(self, form):
-        self = copy_to_obj_from_form(self, form)
+        copy_to_obj_from_form(self, form)
         # if not self.temp_sensor:
         self.temp_sensor = TempSensor.query.filter_by(
             name=form.temp_sensor_name.data).first()
@@ -151,15 +151,19 @@ class Automation(db.Model):
         # return self
 
     def start_automation(self):
-        from .sensors.sensor_tasks import interval_temp_reading
+        from .sensors.sensor_tasks import DS18B20_temp_reading, Internal_Pi_temp_reading
         # setup the GPIO pins
         GPIO.setup(self.fan.swtch_pin, GPIO.OUT)
         # activate the state machine
         sm = EnvStateMachine(self)
         sm.activate_initial_state()
         # start regular temp readings
-        scheduler.add_job(func=interval_temp_reading, args=[
-                          sm, self.temp_sensor, self.id], trigger='interval', minutes=5, id=f'auto-{self.id}')
+        if self.temp_sensor.model == 'DS18B20':
+            scheduler.add_job(func=DS18B20_temp_reading, args=[
+                             sm, self.temp_sensor, self.id], trigger='interval', minutes=5, id=f'auto-{self.id}')
+        elif self.temp_sensor.model == 'Internal Pi':
+            scheduler.add_job(func=Internal_Pi_temp_reading, args=[
+                             sm, self.temp_sensor, self.id], trigger='interval', minutes=5, id=f'auto-{self.id}')
 
     def stop_automation(self):
         # start regular temp readings

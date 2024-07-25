@@ -43,7 +43,7 @@ class TempSensor(Sensor):
 
     def copy_from_form(self, form):
         """class method to call general copy function"""
-        self.copy_to_obj_from_form(self, form)
+        copy_to_obj_from_form(self, form)
         return self
 
 # Reading is the database table that holds historical timestamped sensor readings

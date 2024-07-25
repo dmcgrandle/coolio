@@ -1,6 +1,7 @@
 # Coolio
 
 Coolio is a Raspberry Pi Python fan and temperature controller using a Flask webserver.  I developed it to control the temperature in our electronics room, which is the room under the stairs - we call it the Harry Potter room.
+
 ---
 ### Components/Libraries/opensource used:
 - [Flask-APScheduler](https://pypi.org/project/Flask-APScheduler/) is used to run background tasks to asynchronously perform functions like reading temperature sensors and not be blocking to the webserver answering requests.  I considered redis, but that seemed excessive for the relatively simple tasks this project needs.

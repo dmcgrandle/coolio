@@ -65,6 +65,7 @@ def create_app(config_class=Config):
     app.pwm[1].start(0)
 
     GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(False)
 
     # Restart automations if they were going when last shut down
     with app.app_context():

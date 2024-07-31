@@ -96,7 +96,7 @@ class Fan(db.Model):
         # return self
 
     def copy_from_form(self, form):
-        self.copy_to_obj_from_form(self, form)
+        copy_to_obj_from_form(self, form)
         if self.speed:
             # workaround because DecimalRangeField can't coerce to int
             self.speed = round(self.speed)
@@ -142,7 +142,7 @@ class Automation(db.Model):
         # return self
 
     def copy_from_form(self, form):
-        self = copy_to_obj_from_form(self, form)
+        copy_to_obj_from_form(self, form)
         # if not self.temp_sensor:
         self.temp_sensor = TempSensor.query.filter_by(
             name=form.temp_sensor_name.data).first()

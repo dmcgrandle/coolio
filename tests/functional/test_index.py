@@ -7,7 +7,8 @@ def test_index(test_client):
     """
     response = test_client.get("/")
     assert response.status_code == 200 
-    assert b"Welcome to Coolio" in response.data
+    assert 'Welcome to Coolio' in response.get_data(as_text=True)
+    assert 'Current time is:' in response.get_data(as_text=True)
     
     # read_response_json = json.loads(response.data)  
     # print(read_response_json)  
@@ -21,4 +22,4 @@ def test_index_post(test_client):
     """
     response = test_client.post('/')
     assert response.status_code == 405
-    assert b"Welcome to Coolio" not in response.data
+    assert "Welcome to Coolio" not in response.get_data(as_text=True)

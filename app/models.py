@@ -46,9 +46,21 @@ class TempSensor(Sensor):
         copy_to_obj_from_form(self, form)
         return self
 
+    def start_readings(self, sm, minutes, seconds):
+        from .sensors.sensor_tasks import temp_reading_DS18B20, temp_reading_Internal_Pi
+        if self.model == 'DS18B20':
+            func = temp_reading_DS18B20
+        elif self.model == 'Internal Pi':
+            func = temp_reading_Internal_Pi
+        scheduler.add_job(
+            func=func, args=[sm, self], trigger='interval', minutes=minutes, seconds=seconds, id=self.id
+            )
+
+    def stop_readings(self, sm):
+        scheduler.remove_job(id=self.id)
+
+
 # Reading is the database table that holds historical timestamped sensor readings
-
-
 class Reading(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     timestamp: so.Mapped[datetime] = so.mapped_column(
@@ -151,23 +163,17 @@ class Automation(db.Model):
         # return self
 
     def start_automation(self):
-        from .sensors.sensor_tasks import DS18B20_temp_reading, Internal_Pi_temp_reading
         # setup the GPIO pins
         GPIO.setup(self.fan.swtch_pin, GPIO.OUT)
         # activate the state machine
         sm = EnvStateMachine(self)
         sm.activate_initial_state()
         # start regular temp readings
-        if self.temp_sensor.model == 'DS18B20':
-            scheduler.add_job(func=DS18B20_temp_reading, args=[
-                             sm, self.temp_sensor, self.id], trigger='interval', minutes=5, id=f'auto-{self.id}')
-        elif self.temp_sensor.model == 'Internal Pi':
-            scheduler.add_job(func=Internal_Pi_temp_reading, args=[
-                             sm, self.temp_sensor, self.id], trigger='interval', minutes=5, id=f'auto-{self.id}')
+        self.temp_sensor.start_readings(sm, 0, 10)
 
     def stop_automation(self):
-        # start regular temp readings
-        scheduler.remove_job(id=f'auto-{self.id}')
+        # stop regular temp readings
+        self.temp_sensor.stop_readings()
         GPIO.cleanup(self.fan.swtch_pin)
         GPIO.setup(self.fan.swtch_pin, GPIO.IN)
         # if os.environ.get('WERKZEUG_RUN_MAIN') == "true":

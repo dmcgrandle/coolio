@@ -18,8 +18,7 @@ if os.system('sudo modprobe w1-gpio') or os.system('sudo modprobe w1-therm'):
 
 # @scheduler.task('interval', id='temp_reading', seconds=10, max_instances=1)
 
-
-def DS18B20_temp_reading(sm, temp_sensor, run_i):
+def temp_reading_DS18B20(sm, temp_sensor):
     """Function to be run in BackgroundScheduler - needs app.context() to write Readings"""
     #global run
     with db.app.app_context():
@@ -62,7 +61,7 @@ def DS18B20_temp_reading(sm, temp_sensor, run_i):
             pass
             # auto.sm.send('end', end_signal=True)
 
-def Internal_Pi_temp_reading(sm, temp_sensor, run_i):
+def temp_reading_Internal_Pi(sm, temp_sensor):
     """Function to be run in BackgroundScheduler - needs app.context() to write Readings"""
     #global run
     with db.app.app_context():

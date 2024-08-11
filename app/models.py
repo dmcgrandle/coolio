@@ -56,7 +56,7 @@ class TempSensor(Sensor):
             func=func, args=[sm, self], trigger='interval', minutes=minutes, seconds=seconds, id=self.id
             )
 
-    def stop_readings(self, sm):
+    def stop_readings(self):
         scheduler.remove_job(id=self.id)
 
 

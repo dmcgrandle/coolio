@@ -2,10 +2,14 @@ import pytz
 from flask import render_template, flash, redirect, url_for, request
 from urllib.parse import urlsplit
 import sqlalchemy as sa
+from bokeh.plotting import figure, curdoc
+from bokeh.embed import components 
+from bokeh.themes import DARK_MINIMAL
+from app import db
 from app import db
 from app.sensors import bp
 from app.sensors.forms import EditTempSensorForm, SensorForm, NewSensorForm
-from app.models import Sensor, TempSensor
+from app.models import Sensor, TempSensor, TempReading
 
 
 @bp.route('/', methods=['GET', 'POST'])
@@ -74,3 +78,29 @@ def edit_temp_sensor():
         flash(f'{prefixes[1]} Temp Sensor named {temp_sensor.name}')
         return redirect(url_for('.sensors_index'))
     return render_template('edit_temp_sensor.html', title=f'{prefixes[0]} Temp Sensor', form=form)
+
+@bp.route('/graphs/temp_readings')
+def graph_temp_readings():
+    if TempReading.query.count() == 0:
+        flash('Error: Currently no Temp Readings.  Setup some Temp Sensors')
+        return redirect(url_for('.new_sensor'))
+    # Prepare the data
+    x = [1, 2, 3, 4, 5]
+    y1 = [6, 7, 2, 4, 5]
+    y2 = [2, 4, 7, 2, 8]
+    # Create a new plot
+
+    p = figure(title="Multiple Lines Example", x_axis_label='X', y_axis_label='Y')
+    # Add multiple lines
+    p.line(x, y1, legend_label="Line 1", line_width=2, color="blue")
+    p.line(x, y2, legend_label="Line 2", line_width=2, color="green")
+
+    curdoc().theme = DARK_MINIMAL
+    curdoc().add_root(p)
+
+    # Get Chart Components 
+    script, div = components(p) 
+  
+    # Return the components to the HTML template 
+    return render_template('graph_readings.html', script=script, div=div) 
+    #return render_template('graphs_index.html', title='Fans')

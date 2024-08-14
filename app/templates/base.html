@@ -26,9 +26,14 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a id="nav-home" class="nav-link {{ isActive('sensors.sensors_index') }}" aria-current="page"
-              href="{{ url_for('sensors.sensors_index') }}">Sensors</a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="{{ url_for('sensors.sensors_index') }}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Sensors
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{{ url_for('sensors.sensors_index') }}">List Sensors</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('sensors.graph_temp_readings') }}">Graph Temperature Readings</a></li>
+            </ul>
           </li>
           <li class="nav-item">
             <a id="nav-fan" class="nav-link {{ isActive('fans.fans_index') }}" aria-current="page"

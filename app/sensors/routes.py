@@ -1,4 +1,5 @@
 import pytz
+from datetime import date, timedelta
 from flask import render_template, flash, redirect, url_for, request
 from urllib.parse import urlsplit
 import sqlalchemy as sa
@@ -83,7 +84,28 @@ def edit_temp_sensor():
 def graph_temp_readings():
     if TempReading.query.count() == 0:
         flash('Error: Currently no Temp Readings.  Setup some Temp Sensors')
-        return redirect(url_for('.new_sensor'))
+        return redirect(url_for('.sensors_index'))
+    readings = TempReading.query.all()
+    today = date.today()
+    yesterday = today - timedelta(days=1)
+    last_week = today - timedelta(weeks=1)
+    last_month = today - timedelta(days=30)
+    readings_today = TempReading.query.filter(TempReading.timestamp.between(yesterday, today)).all()
+    readings_this_week = TempReading.query.filter(TempReading.timestamp.between(last_week, today)).all()
+    readings_this_month = TempReading.query.filter(TempReading.timestamp.between(last_month, today)).all()
+    if date.today() : #aything in last day 
+        pass # display last day's data
+    elif not date.today(): #data_in_last_week: #anything in the last week?
+        pass # display last week's data
+    elif not date.today(): #data_in_last_month: #anything in the last month?
+        pass # display last month's data
+    else:
+        flash('Oops - no temperature data in the last month, sorry')
+        return redirect(url_for('.sensors_index'))
+
+    delta = readings[-1].timestamp - readings[0].timestamp
+    if delta.days > 7:
+        pass
     # Prepare the data
     x = [1, 2, 3, 4, 5]
     y1 = [6, 7, 2, 4, 5]

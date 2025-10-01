@@ -1,8 +1,10 @@
-from flask import render_template, redirect, request, flash, url_for
+from flask import render_template, redirect, request, flash, url_for, current_app
 from app import db
 from . import bp
 from app.models import Automation, Fan, TempSensor
 from .forms import AutomationForm, EditAutomationForm
+import requests
+
 
 
 @bp.route('/')
@@ -62,3 +64,23 @@ def edit_automation():
         flash(f'{prefixes[1]} automation named {auto.name}')
         return redirect(url_for('.automations'))
     return render_template('edit_automation.html', title=f'{prefixes[0]} automation', form=form)
+
+@bp.route('/send_rvbd_webhook', methods=['GET'])
+def send_rvbd_webhook():
+    url = current_app.config['RVBD_ACCESS_TOKEN_URI']
+    headers = {
+        'Accept': '*/*',
+        'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+    payload = {
+        'grant_type': 'client_credentials',
+        'client_id': current_app.config['RVBD_CLIENT_ID'],
+        'client_secret': current_app.config['RVBD_CLIENT_CRED'],
+        'scope': current_app.config['RVBD_API_SCOPE']
+    }
+    r = requests.post(url=url, data=payload, headers=headers)
+    data = r.json()
+    access_token = data['access_token']
+
+    return redirect(url_for('.automations'))

@@ -27,6 +27,8 @@
 <a class="mt-3 btn btn-primary" href="{{ url_for('main.edit_automation')+'?name=_new_' }}" role="button">Add an
   automation</a>
 
+<a class="mt-3 btn btn-info" href="{{ url_for('main.send_rvbd_webhook') }}" role="button">Send RVBD Webhook</a>
+
 <script src="{{url_for('static', filename='autos.js')}}"></script>
 
 {% endblock %}
